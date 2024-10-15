@@ -1,31 +1,6 @@
-; Define PPU Registers
-PPU_CONTROL = $2000 ; PPU Control Register 1 (Write)
-PPU_MASK = $2001 ; PPU Control Register 2 (Write)
-PPU_STATUS = $2002; PPU Status Register (Read)
-PPU_SPRRAM_ADDRESS = $2003 ; PPU SPR-RAM Address Register (Write)
-PPU_SPRRAM_IO = $2004 ; PPU SPR-RAM I/O Register (Write)
-PPU_VRAM_ADDRESS1 = $2005 ; PPU VRAM Address Register 1 (Write)
-PPU_VRAM_ADDRESS2 = $2006 ; PPU VRAM Address Register 2 (Write)
-PPU_VRAM_IO = $2007 ; VRAM I/O Register (Read/Write)
-SPRITE_DMA = $4014 ; Sprite DMA Register
-
-; Define APU Registers
-APU_DM_CONTROL = $4010 ; APU Delta Modulation Control Register (Write)
-APU_CLOCK = $4015 ; APU Sound/Vertical Clock Signal Register (Read/Write)
-
-; Joystick/Controller values
-JOYPAD1 = $4016 ; Joypad 1 (Read/Write)
-JOYPAD2 = $4017 ; Joypad 2 (Read/Write)
-
-; Gamepad bit values
-PAD_A      = $01
-PAD_B      = $02
-PAD_SELECT = $04
-PAD_START  = $08
-PAD_U      = $10
-PAD_D      = $20
-PAD_L      = $40
-PAD_R      = $80
+;*****************************************************************
+; Define NES cartridge Header
+;*****************************************************************
 
 .segment "HEADER"
 INES_MAPPER = 0 ; 0 = NROM
@@ -39,28 +14,47 @@ INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 .byte (INES_MAPPER & %11110000)
 .byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
 
+;*****************************************************************
+; Tiles
+;*****************************************************************
+
 .segment "TILES"
 .incbin "../assets/texture.chr"
 
-.segment "ZEROPAGE"
-nmi_ready:		.res 1 ; set to 1 to push a PPU frame update, 
-					   ;        2 to turn rendering off next NMI
-gamepad:		.res 1 ; stores the current gamepad values
-
-d_x:			.res 1 ; x velocity of ball
-d_y:			.res 1 ; y velocity of ball
-
+;*****************************************************************
+; Vectors
+;*****************************************************************
 
 .segment "VECTORS" ; Book up segments
 .word nmi ; Not able to disable interupt. Its connected to the ppu
 .word reset ; On start (When the reset button is pressed on the nes)
 .word irq ; Request an interupt which we just disable.
 
+;*****************************************************************
+; Zeropage definitions
+;*****************************************************************
+
+.segment "ZEROPAGE"
+					   ;        2 to turn rendering off next NMI
+
+d_x:			.res 1 ; x velocity of ball
+d_y:			.res 1 ; y velocity of ball
+
+;*****************************************************************
+; Sprite OAM Data area - copied to VRAM in NMI routine
+;*****************************************************************
+
 .segment "OAM"
 oam: .res 256
 
+;*****************************************************************
+; Include NES Function Library
+;*****************************************************************
+
+.include "neslib.s"
+
 .segment "BSS"
-palette: .res 32
+palette: .res 32 ; Current palette
 
 
 .segment "CODE"
@@ -171,7 +165,8 @@ wait_vblank2:
     bit PPU_STATUS
     bpl wait_vblank2
 
-
+    ; NES is initialized and ready to begin
+	; - enable the NMI for graphical updates and jump to our main program
     lda #%10001000
     sta PPU_CONTROL ; Enable NMI
     jmp main
@@ -279,73 +274,7 @@ NOT_GAMEPAD_DOWN:
 
 .endproc
 
-; ppu_update: waits until next NMI and turns rendering on (if not already)
-.proc ppu_update
-    lda #1
-    sta nmi_ready
-    loop:
-    lda nmi_ready
-    bne loop
-    rts
-.endproc
 
-; Dont we need also an function to turn it back on?
-.proc ppu_off
-    lda #2
-    sta nmi_ready
-    loop:
-    lda nmi_ready
-    bne loop
-    rts
-.endproc
-
-; No clue what this does
-.proc clear_nametable
- 	lda PPU_STATUS ; reset address latch
- 	lda #$20 ; set PPU address to $2000
- 	sta PPU_VRAM_ADDRESS2
- 	lda #$00
- 	sta PPU_VRAM_ADDRESS2
-
- 	; empty nametable
- 	lda #0
- 	ldy #30 ; clear 30 rows
- 	rowloop:
- 		ldx #32 ; 32 columns
- 		columnloop:
- 			sta PPU_VRAM_IO
- 			dex
- 			bne columnloop
- 		dey
- 		bne rowloop
-
- 	; empty attribute table
- 	ldx #64 ; attribute table is 64 bytes
- 	loop:
- 		sta PPU_VRAM_IO
- 		dex
- 		bne loop
- 	rts
-.endproc
-
-.proc gamepad_poll
-    lda #1
-    sta JOYPAD1
-    lda #0
-    sta JOYPAD1
-    ldx #8
-    loop:
-    pha
-    lda JOYPAD1
-    and #%00000011
-    cmp #%00000001
-    pla
-    ror
-    dex
-    bne loop
-    sta gamepad
-    rts
-.endproc
 
 
 .segment "RODATA"
