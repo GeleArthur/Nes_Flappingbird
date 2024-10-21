@@ -78,7 +78,9 @@ cx2:			.res 1 ; collision x1
 cy2:			.res 1 ; collision x2
 cw2:			.res 1 ; collision w1
 ch2:			.res 1 ; collision h2
+
 .include "macros.s"
+.include "sprite_macros.s"
 
 ;*****************************************************************
 ; wait_frame: waits until the next NMI occurs
@@ -166,32 +168,77 @@ gamepad3:		.res 1 ; Controller 3
 gamepad4:		.res 1 ; Controlelr 4
 
 ;*****************************************************************
-; gamepad_poll: this reads the gamepad state into the variable labelled "gamepad"
-; This only reads the first gamepad, and also if DPCM samples are played they can
-; conflict with gamepad reading, which may give incorrect results.
+; gamepad_poll: polls the gamepads and stores the results in gamepad1, gamepad2, gamepad3, and gamepad4
 ;*****************************************************************
 .segment "CODE"
 .proc gamepad_poll
-	; strobe the gamepad to latch current button state
-	lda #1
+	lda #$01
 	sta JOYPAD1
-	lda #0
+
+	lda #$00
 	sta JOYPAD1
-	; read 8 bytes from the interface at $4016
+
 	ldx #8
-loop:
-	pha
-	lda JOYPAD1
-	; combine low two bits and store in carry bit
-	and #%00000011
-	cmp #%00000001
-	pla
-	; rotate carry into gamepad variable
-	ror a
-	dex
-	bne loop
-	sta gamepad
-	rts
+
+	loop1:
+		pha
+		lda JOYPAD1
+
+		and #%00000011
+		cmp #%00000001
+		pla
+		
+		ror
+		dex
+		bne loop1
+		sta gamepad1
+
+		ldx #8
+
+	loop2:
+		pha
+		lda JOYPAD1
+
+		and #%00000011
+		cmp #%00000001
+		pla
+		
+		ror
+		dex
+		bne loop2
+		sta gamepad3
+
+		ldx #8
+
+	loop3:
+		pha
+		lda JOYPAD2
+
+		and #%00000011
+		cmp #%00000001
+		pla
+		
+		ror
+		dex
+		bne loop3
+		sta gamepad2
+
+		ldx #8
+
+	loop4:
+		pha
+		lda JOYPAD2
+
+		and #%00000011
+		cmp #%00000001
+		pla
+		
+		ror
+		dex
+		bne loop4
+		sta gamepad4
+
+    rts
 .endproc
 
 ;*****************************************************************

@@ -19,6 +19,7 @@ class FileWachter(FileSystemEventHandler):
                 print(f'File changed: {event.src_path}. Running compile.bat...')
                 # Run the compile.bat script
                 subprocess.run([bat_script])
+                # check in the subprocess if the errorlevel is 0
 
 if __name__ == "__main__":
     folder = os.path.dirname(os.path.abspath(__file__))
