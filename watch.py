@@ -18,16 +18,19 @@ class FileWachter(FileSystemEventHandler):
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print(f'File changed: {event.src_path}. Running compile.bat...')
                 # Run the compile.bat script
-                subprocess.run([bat_script])
+                subprocess.run([script_path])
                 # check in the subprocess if the errorlevel is 0
 
 if __name__ == "__main__":
     folder = os.path.dirname(os.path.abspath(__file__))
     
-    bat_script = os.path.join(folder, "compile.bat")
+    if os.name == 'nt':
+        script_path = os.path.join(folder, "compile.bat")
+    else:
+        script_path = os.path.join(folder, "compile.sh")
     
     # Check if compile.bat exists
-    if not os.path.isfile(bat_script):
+    if not os.path.isfile(script_path):
         print(f"Error: compile.bat not found in {folder}")
         exit(1)
     
