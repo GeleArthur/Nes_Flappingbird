@@ -188,15 +188,21 @@ PLAYER_3 = 2
 PLAYER_4 = 3
 
 .proc setup_player_1
+    lda #180
+    sta p1_x
+
+    lda #120
+    sta p1_y
+
     lda p1_x
     set_sprite_x_a PLAYER_1
 
     lda p1_y
     set_sprite_y_a PLAYER_1
 
-    set_sprite_tile PLAYER_1, #3
+    set_sprite_tile PLAYER_1, #1
 
-    set_sprite_attr PLAYER_1, %00000000
+    set_sprite_attr PLAYER_1, %10000000
 
     rts
 
@@ -263,10 +269,18 @@ PLAYER_4 = 3
 
     lda p1_y
     set_sprite_y_a PLAYER_1
+
     rts
 .endproc
 
 .proc setup_player_2
+    lda #180 + 8
+    sta p2_x
+
+    lda #120
+    sta p2_y
+
+
     lda p2_x
     set_sprite_x_a PLAYER_2
 
@@ -275,7 +289,7 @@ PLAYER_4 = 3
 
     set_sprite_tile PLAYER_2, #2
 
-    set_sprite_attr PLAYER_2, %00000000
+    set_sprite_attr PLAYER_2, %10000000
 
     rts
 
@@ -346,15 +360,22 @@ PLAYER_4 = 3
 .endproc
 
 .proc setup_player_3
+    lda #180
+    sta p3_x
+
+    lda #120 + 8
+    sta p3_y
+
+
     lda p3_x
     set_sprite_x_a PLAYER_3
 
     lda p3_y
     set_sprite_y_a PLAYER_3
 
-    set_sprite_tile PLAYER_3, #4
+    set_sprite_tile PLAYER_3, #3
 
-    set_sprite_attr PLAYER_3, %00000000
+    set_sprite_attr PLAYER_3, %10000000
 
     rts
 
@@ -425,15 +446,22 @@ PLAYER_4 = 3
 .endproc
 
 .proc setup_player_4
+
+    lda #180 + 8
+    sta p4_x
+
+    lda #120 + 8
+    sta p4_y
+
     lda p4_x
     set_sprite_x_a PLAYER_4
 
     lda p4_y
     set_sprite_y_a PLAYER_4
 
-    set_sprite_tile PLAYER_4, #2
+    set_sprite_tile PLAYER_4, #4
 
-    set_sprite_attr PLAYER_4, %00000000
+    set_sprite_attr PLAYER_4, %10000000
 
     rts
 

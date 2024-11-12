@@ -47,14 +47,14 @@ JOYPAD1 = $4016 ; Joypad 1 (Read/Write)
 JOYPAD2 = $4017 ; Joypad 2 (Read/Write)
 
 ; Gamepad bit values
-PAD_A      = $01
-PAD_B      = $02
-PAD_SELECT = $04
-PAD_START  = $08
-PAD_U      = $10
-PAD_D      = $20
-PAD_L      = $40
-PAD_R      = $80
+PAD_A      = $80
+PAD_B      = $40
+PAD_SELECT = $20
+PAD_START  = $10
+PAD_U      = $08
+PAD_D      = $04
+PAD_L      = $02
+PAD_R      = $01
 
 ; Useful PPU memory addresses
 NAME_TABLE_0_ADDRESS		= $2000
@@ -174,69 +174,39 @@ gamepad4:		.res 1 ; Controlelr 4
 .proc gamepad_poll
 	lda #$01
 	sta JOYPAD1
+	sta JOYPAD2
+	sta gamepad1
 
 	lda #$00
 	sta JOYPAD1
+	sta JOYPAD2
 
 	ldx #8
-
 	loop1:
-		pha
 		lda JOYPAD1
+		lsr a
+		rol gamepad1
 
-		and #%00000011
-		cmp #%00000001
-		pla
-		
-		ror
+		lda JOYPAD2
+		lsr
+		rol gamepad2
+
 		dex
 		bne loop1
-		sta gamepad1
 
-		ldx #8
-
+	ldx #8
 	loop2:
-		pha
 		lda JOYPAD1
+		lsr a
+		rol gamepad3
 
-		and #%00000011
-		cmp #%00000001
-		pla
-		
-		ror
+		lda JOYPAD2
+		lsr
+		rol gamepad4
+
 		dex
 		bne loop2
-		sta gamepad3
 
-		ldx #8
-
-	loop3:
-		pha
-		lda JOYPAD2
-
-		and #%00000011
-		cmp #%00000001
-		pla
-		
-		ror
-		dex
-		bne loop3
-		sta gamepad2
-
-		ldx #8
-
-	loop4:
-		pha
-		lda JOYPAD2
-
-		and #%00000011
-		cmp #%00000001
-		pla
-		
-		ror
-		dex
-		bne loop4
-		sta gamepad4
 
     rts
 .endproc
