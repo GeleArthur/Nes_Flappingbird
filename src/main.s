@@ -39,15 +39,24 @@ INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 
 p1_x: .res 1 ; Player 1 x position
 p1_y: .res 1 ; Player 1 y position
+p1_g: .res 1 ; Player 1 gravity acceleration
+p1_g_c: .res 1 ; Player 1 Gravity Counter
 
 p2_x: .res 1 ; Player 2 x position
 p2_y: .res 1 ; Player 2 y position
+p2_g: .res 1 ; Player 2 gravity acceleration
+p2_g_c: .res 1 ; Player 1 Gravity Counter
 
 p3_x: .res 1 ; Player 3 x position
 p3_y: .res 1 ; Player 3 y position
+p3_g: .res 1 ; Player 3 gravity acceleration
+p3_g_c: .res 1 ; Player 1 Gravity Counter
 
 p4_x: .res 1 ; Player 4 x position
 p4_y: .res 1 ; Player 4 y position
+p4_g: .res 1 ; Player 4 gravity acceleration
+p4_g_c: .res 1 ; Player 1 Gravity Counter
+
 
 
 ;*****************************************************************
@@ -263,11 +272,44 @@ PLAYER_4 = 3
             sta p1_y
 
     NOT_GAMEPAD_DOWN:
+        lda gamepad1
+        and #PAD_A
+
+        beq NOT_GAMEPAD_A
+            ; Flying
+            lda p1_y
+            cmp #0
+            beq NOT_GAMEPAD_A
+            sec
+            sbc #$09
+            sta p1_y
+            ;resets gravity acceleration
+            lda #$0
+            sta p1_g
+
+    NOT_GAMEPAD_A:
 
     lda p1_x
     set_sprite_x_a PLAYER_1
 
+    lda #$03
+    cmp p1_g
+    beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
+
+    inc p1_g_c
+    lda #$15  ;value for the counter to reach
+    cmp p1_g_c ;check if the player gravity counter is $FF
+
+    bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
+    inc p1_g
+    lda #$0
+    sta p1_g_c
+
+    BRANCH_ON_TERMINAL_VELOCITY:
     lda p1_y
+    sec
+    adc p1_g ;gravity 
+    sta p1_y
     set_sprite_y_a PLAYER_1
 
     rts
@@ -350,12 +392,46 @@ PLAYER_4 = 3
             sta p2_y
 
     NOT_GAMEPAD_DOWN:
+        lda gamepad2
+        and #PAD_A
+
+        beq NOT_GAMEPAD_A
+            ; Flying
+            lda p2_y
+            cmp #0
+            beq NOT_GAMEPAD_A
+            sec
+            sbc #$09
+            sta p2_y
+            ;resets gravity acceleration
+            lda #$0
+            sta p2_g
+
+    NOT_GAMEPAD_A:
 
     lda p2_x
     set_sprite_x_a PLAYER_2
 
+    lda #$03
+    cmp p2_g
+    beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
+
+    inc p2_g_c
+    lda #$15  ;value for the counter to reach
+    cmp p2_g_c ;check if the player gravity counter is $FF
+
+    bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
+    inc p2_g
+    lda #$0
+    sta p2_g_c
+
+    BRANCH_ON_TERMINAL_VELOCITY:
     lda p2_y
+    sec
+    adc p2_g ;gravity 
+    sta p2_y
     set_sprite_y_a PLAYER_2
+
     rts
 .endproc
 
@@ -436,12 +512,46 @@ PLAYER_4 = 3
             sta p3_y
 
     NOT_GAMEPAD_DOWN:
+        lda gamepad3
+        and #PAD_A
+
+        beq NOT_GAMEPAD_A
+            ; Flying
+            lda p3_y
+            cmp #0
+            beq NOT_GAMEPAD_A
+            sec
+            sbc #$09
+            sta p3_y
+            ;resets gravity acceleration
+            lda #$0
+            sta p3_g
+
+    NOT_GAMEPAD_A:
 
     lda p3_x
     set_sprite_x_a PLAYER_3
 
+    lda #$03
+    cmp p3_g
+    beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
+
+    inc p3_g_c
+    lda #$15  ;value for the counter to reach
+    cmp p3_g_c ;check if the player gravity counter is $FF
+
+    bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
+    inc p3_g
+    lda #$0
+    sta p3_g_c
+
+    BRANCH_ON_TERMINAL_VELOCITY:
     lda p3_y
+    sec
+    adc p3_g ;gravity 
+    sta p3_y
     set_sprite_y_a PLAYER_3
+
     rts
 .endproc
 
@@ -522,12 +632,46 @@ PLAYER_4 = 3
             sta p4_y
 
     NOT_GAMEPAD_DOWN:
+        lda gamepad4
+        and #PAD_A
+
+        beq NOT_GAMEPAD_A
+            ; Flying
+            lda p4_y
+            cmp #0
+            beq NOT_GAMEPAD_A
+            sec
+            sbc #$09
+            sta p4_y
+            ;resets gravity acceleration
+            lda #$0
+            sta p4_g
+
+    NOT_GAMEPAD_A:
 
     lda p4_x
     set_sprite_x_a PLAYER_4
 
+    lda #$03
+    cmp p4_g
+    beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
+
+    inc p4_g_c
+    lda #$15  ;value for the counter to reach
+    cmp p4_g_c ;check if the player gravity counter is $FF
+
+    bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
+    inc p4_g
+    lda #$0
+    sta p4_g_c
+
+    BRANCH_ON_TERMINAL_VELOCITY:
     lda p4_y
+    sec
+    adc p4_g ;gravity 
+    sta p4_y
     set_sprite_y_a PLAYER_4
+
     rts
 .endproc
 
