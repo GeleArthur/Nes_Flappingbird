@@ -1,131 +1,17 @@
-;*****************************************************************
-; Define NES cartridge Header
-;*****************************************************************
-
-.segment "HEADER"
-INES_MAPPER = 0 ; 0 = NROM
-INES_MIRROR = 0 ; 0 = horizontal mirroring, 1 = vertical mirroring
-INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
-
-.byte 'N', 'E', 'S', $1A ; ID 
-.byte $02 ; 16k PRG bank count
-.byte $01 ; 8k CHR bank count
-.byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $f) << 4)
-.byte (INES_MAPPER & %11110000)
-.byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
-
-;*****************************************************************
-; Tiles
-;*****************************************************************
-
-.segment "TILES"
-.incbin "../assets/texture.chr"
-
-;*****************************************************************
-; Vectors
-;*****************************************************************
-
-.segment "VECTORS" ; Book up segments
-.word nmi ; Not able to disable interupt. Its connected to the ppu
-.word reset ; On start (When the reset button is pressed on the nes)
-.word irq ; Request an interupt which we just disable.
-
-;*****************************************************************
-; Zeropage definitions
-;*****************************************************************
-
-.segment "ZEROPAGE"
-					   ;        2 to turn rendering off next NMI
-
-p1_x: .res 1 ; Player 1 x position
-p1_y: .res 1 ; Player 1 y position
-
-p2_x: .res 1 ; Player 2 x position
-p2_y: .res 1 ; Player 2 y position
-
-p3_x: .res 1 ; Player 3 x position
-p3_y: .res 1 ; Player 3 y position
-
-p4_x: .res 1 ; Player 4 x position
-p4_y: .res 1 ; Player 4 y position
-
+.include "header.s"
+.include "vectors.s"
+.include "zeropage.s"
 
 ;*****************************************************************
 ; Sprite OAM Data area - copied to VRAM in NMI routine
 ;*****************************************************************
-
+; Why is this here?
 .segment "OAM"
-oam: .res 256
+oam: .res 256 
 
-;*****************************************************************
-; Include NES Function Library
-;*****************************************************************
-
-.include "neslib.s"
-
+; Why is this here????? we copy it from the ram anyway?
 .segment "BSS"
 palette: .res 32 ; Current palette
-
-
-.segment "CODE"
-.proc nmi
-    pha ; Push A X Y on the stack. Not P?
-	txa
-	pha
-	tya
-	pha
-
-    lda nmi_ready
-    bne continue
-    jmp ppu_update_end
-
-    ; Copy stuff in the ppu? Doesn;t really tell me what
-continue:
-    cmp #2
-    bne cont_render
-    lda #%00000000
-    sta PPU_MASK
-    ldx #0
-    stx nmi_ready
-    jmp ppu_update_end
-cont_render:
-    ldx #0
-    stx PPU_SPRRAM_ADDRESS
-    lda #>oam
-    sta SPRITE_DMA
-
-    lda #%10001000
-    sta PPU_CONTROL
-    lda PPU_STATUS
-    lda #$3F
-    sta PPU_VRAM_ADDRESS2
-    stx PPU_VRAM_ADDRESS2
-    ldx #0
-
-loop:
-    lda palette, x
-    sta PPU_VRAM_IO
-    inx
-    cpx #32
-    bcc loop
-
-    lda #%00011110
-    sta PPU_MASK
-    ldx #0
-    stx nmi_ready
-ppu_update_end:
-    pla
-    tay
-    pla
-    tax
-    pla
-    rti
-.endproc
-
-.proc irq
-    rti
-.endproc
-
 
 .proc reset
     sei ; disable interrupt BUT we never enable???
@@ -652,3 +538,7 @@ default_palette:
 
 welcome_txt:
 .byte 'W','E','L','C', 'O', 'M', 'E', 0
+
+
+.segment "TILES"
+.incbin "../assets/texture.chr"
