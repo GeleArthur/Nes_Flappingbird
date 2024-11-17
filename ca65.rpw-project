@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "syntax": "ca65",
+    "upperCase": false
+  },
+  "srcDir": "src",
+  "includes": [
+    "/src/helpers/definitions.s",
+    "/src/helpers/macros.s",
+    "/src/helpers/subroutines.s"
+  ]
+}

@@ -1,6 +1,9 @@
 .include "header.s"
 .include "vectors.s"
 .include "zeropage.s"
+.include "helpers/definitions.s"
+.include "helpers/macros.s"
+.include "helpers/subroutines.s"
 
 ;*****************************************************************
 ; Sprite OAM Data area - copied to VRAM in NMI routine
@@ -14,21 +17,9 @@ oam: .res 256
 palette: .res 32 ; Current palette
 
 .proc reset
-    sei ; disable interrupt BUT we never enable???
-    lda #0 
-    sta PPU_CONTROL ; Disable NMI? 
-    sta PPU_MASK
-    sta APU_DM_CONTROL ; Turns off the ppu and apu
-    lda #$40
-    sta JOYPAD2 ; Set up for the second controller port?
-
-    cld ; clear decimal mode
-    ldx #$FF
-    tsx ; Dont know why we set the stack pointer to FF here?
-
-wait_vblank:
-	bit PPU_STATUS
-	bpl wait_vblank
+    NES_INIT ; Disables everything and default setup stuff
+    jmp WaitVBlank
+    jmp ClearRam
 
     ; Clear all the ram
     lda #0
@@ -42,7 +33,7 @@ wait_vblank:
     sta $0500,x
     sta $0600,x
     sta $0700,x
-    inx ; does this change the negative flag???
+    inx  ; does this change the negative flag???
     bne clear_ram
 
     lda #255
@@ -280,6 +271,7 @@ PLAYER_4 = 3
         sec
         sbc #1
         sta p3_x
+        
     
     NOT_GAMEPAD_LEFT:
 
@@ -416,11 +408,6 @@ PLAYER_4 = 3
     set_sprite_y_a PLAYER_4
     rts
 .endproc
-
-
-
-
-
 
 
 
