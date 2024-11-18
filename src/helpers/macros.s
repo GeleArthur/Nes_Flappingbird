@@ -4,7 +4,7 @@
     cld ; disable decible mode
 
     ldx #$FF
-    tsx ; Make sure stack pointer starts at FF
+    txs ; Make sure stack pointer starts at FF
 
     inx ; increment x by 1 so it becomes $00
     stx PPU_CTRL ; disable V in NMI

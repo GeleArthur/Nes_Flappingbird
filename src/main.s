@@ -6,9 +6,6 @@
 .include "helpers/macros.s"
 .include "helpers/subroutines.s"
 
-;*****************************************************************
-; Sprite OAM Data area - copied to VRAM in NMI routine
-;*****************************************************************
 .segment "OAM"
 oam: .res 256 
 
