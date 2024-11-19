@@ -18,7 +18,16 @@ oam: .res 256
     jsr WaitSync
     jsr ClearRam
     jsr WaitSync
+
+	lda #$3f	; $3F -> A register
+    sta PPU_ADDR	; write high byte first
+	lda #$00	; $00 -> A register
+    sta PPU_ADDR    ; $3F00 -> PPU address
+    lda #$1c	; $1C = light blue color
+    sta PPU_DATA    ; $1C -> PPU data
+
     jsr SetPallet
+
 
     lda #MASK_BG|MASK_SPR
     sta PPU_MASK
