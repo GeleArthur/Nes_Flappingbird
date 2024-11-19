@@ -1,22 +1,41 @@
 .segment "ZEROPAGE"
-; If 1 the cpu is currently calulating the next frame.
-; If 0 the cpu is waiting for the ppu
+; If 1 the cpu is done calulateing the frame and the ppu should render. The cpu should wait until the ppu is done rendering the frame set to 0
+; If 0 the ppu is done and the cpu should calulate the next frame. the ppu should also wait for the next render until its set to 1
 nmi_ready: .res 1
 
 
 .segment "CODE"
 
 .macro WAIT_UNITL_FRAME_HAS_RENDERED
-waitVBlank:
+@waitVBlank:
     lda nmi_ready
- 	cmp #0
- 	bne waitVBlank
+ 	bne @waitVBlank ; If nmi_ready == 1 -> wait
 .endmacro
     
 .macro FRAME_IS_DONE_RENDERING
-    ldx #0
-    stx nmi_ready 
+    lda #0
+    sta nmi_ready 
 .endmacro
+
+.proc nmi
+    SAVE_REGISTERS
+    lda nmi_ready
+    bne skipRenderingFrame ; If the nmi_ready is 0 we skip as the cpu is not ready rendering the frame
+    
+    ; Copy oam
+    ; Copy background
+
+    FRAME_IS_DONE_RENDERING 
+skipRenderingFrame:
+
+    RESTORE_REGISTERS
+    rti
+.endproc
+
+.proc irq
+    rti
+.endproc
+
 
 ; .proc nmi
 ;     pha ; Push A X Y on the stack. Not P?
@@ -72,23 +91,5 @@ waitVBlank:
 ;     rti
 ; .endproc
 
-.proc nmi
-    SAVE_REGISTERS
-    lda nmi_ready
-    bne skipRenderingFrame ; If the nmi_ready is 1 we skip as the cpu is not ready rendering the frame
-    
-    
 
-    
-
-    FRAME_IS_DONE_RENDERING
-skipRenderingFrame:
-
-    RESTORE_REGISTERS
-    rti
-.endproc
-
-.proc irq
-    rti
-.endproc
 

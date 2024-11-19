@@ -9,7 +9,7 @@
     inx ; increment x by 1 so it becomes $00
     stx PPU_CTRL ; disable V in NMI
     stx PPU_MASK ; Disable rendering
-    stx DMC_FREQ ; Mute APU
+    ;stx DMC_FREQ ; Mute APU
 .endmacro
 
 ; Saves all registers. Nice for interupt
