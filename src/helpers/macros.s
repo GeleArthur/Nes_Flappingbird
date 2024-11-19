@@ -10,6 +10,19 @@
     stx PPU_CTRL ; disable V in NMI
     stx PPU_MASK ; Disable rendering
     ;stx DMC_FREQ ; Mute APU
+
+
+    jsr WaitSync ; wait 
+    jsr ClearRam
+    jsr WaitSync
+    jsr SetPallet
+    jsr HideAllAOMSprites ; All of these could be macros
+
+    lda #MASK_SPR ;| MASK_BG
+    sta PPU_MASK ; Enable sprite and background rendering
+    lda #CTRL_NMI|CTRL_SPR_1000
+    sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
+
 .endmacro
 
 ; Saves all registers. Nice for interupt

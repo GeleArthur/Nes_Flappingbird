@@ -2,44 +2,33 @@
 .include "helpers/macros.s"
 .include "helpers/subroutines.s"
 
-.include "header.s"
-.include "vectors.s"
-.include "zeropage.s"
-.include "nmi-vblank.s"
-.include "ppu-setup.s"
+.include "setup/header.s"
+.include "setup/vectors.s"
+.include "setup/zeropage.s"
+.include "setup/nmi-vblank.s"
+.include "setup/ppu-setup.s"
 
 .segment "CODE"
 .proc reset
-    NES_INIT ; Disables everything and default setup stuff
-    jsr WaitSync
-    jsr ClearRam
-    jsr WaitSync
-    jsr SetPallet
-    jsr HideAllAOMSprites ; All of these could be macros
+    NES_INIT ; Setup nes
 
-    lda #MASK_SPR ;| MASK_BG
-    sta PPU_MASK ; Enable sprite and background rendering
-    lda #CTRL_NMI|CTRL_SPR_1000
-    sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
-
+    ; INIT GAME CODE
     OAM_WRITE_X 0, #100
     OAM_WRITE_Y 0, #100
     OAM_WRITE_TILE 0, #1
-
 
     jmp main
 .endproc
 
 .proc main
 mainloop:
-    WAIT_UNITL_FRAME_HAS_RENDERED
+    ; MAIN LOOP
 
-    lda #1 ; Done calulating the frame 
-    sta nmi_ready
+    
+
+    WAIT_UNITL_FRAME_HAS_RENDERED
     jmp mainloop
 .endproc
-
-
 
 
 .segment "TILES"
