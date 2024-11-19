@@ -1,3 +1,8 @@
+.segment "ZEROPAGE"
+nametablePtr01: .res 1
+nametablePtr02: .res 1
+
+
 .segment "CODE"
 
 .proc setup_background
@@ -11,24 +16,22 @@ LoadBackground:
   LDY #$00
 
 LoadBackgroundLoop:
-
-  LDA nametable01, x     ; load data from address (background + the value in x)
-  STA PPU_VRAM_IO             ; write to PPU
-
-  ; UGLY CODE
-  CPX #$FF
-  BNE :+
-  INY
-  : 
-  ;
-
-  INX                   ; X = X + 1
-
-  CPX #$C0              ; Compare X to hex $80, decimal 128 - copying 128 bytes 
-  BNE LoadBackgroundLoop
-  CPY #$03
-  BNE LoadBackgroundLoop  ; Branch to LoadBackgroundLoop if compare was Not Equal to zero
-                        ; if compare was equal to 128, keep going down
+  lda #<nametable01
+  sta nametablePtr01
+  lda #>nametable01
+  sta nametablePtr02
+  ldx #4 ; do this loop 4 times
+  ldy #0
+:
+	lda (<nametablePtr01), Y
+	sta PPU_VRAM_IO
+	iny
+	bne :-
+	dex
+	beq :+ ; finished if X = 0
+	inc nametablePtr02 ; ptr = ptr + 256
+	jmp :- ; loop again: Y = 0, X -= 1, ptr += 256
+:
 
 LoadAttribute:
   LDA PPU_STATUS             ; read PPU status to reset the high/low latch
