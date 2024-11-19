@@ -1,29 +1,4 @@
 
-.macro NES_INIT
-    sei ; disable interrupt as its never used.
-    cld ; disable decible mode
-
-    ldx #$FF
-    txs ; Make sure stack pointer starts at FF
-
-    inx ; increment x by 1 so it becomes $00
-    stx PPU_CTRL ; disable V in NMI
-    stx PPU_MASK ; Disable rendering
-    ;stx DMC_FREQ ; Mute APU
-
-
-    jsr WaitSync ; wait 
-    jsr ClearRam
-    jsr WaitSync
-    jsr SetPallet
-    jsr HideAllAOMSprites ; All of these could be macros
-
-    lda #MASK_SPR ;| MASK_BG
-    sta PPU_MASK ; Enable sprite and background rendering
-    lda #CTRL_NMI|CTRL_SPR_1000
-    sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
-
-.endmacro
 
 ; Saves all registers. Nice for interupt
 .macro SAVE_REGISTERS

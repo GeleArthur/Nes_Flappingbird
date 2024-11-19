@@ -1,17 +1,33 @@
-.proc SetPallet
-    PPU_SETADDR $3f00
-    ldy #$0
-@loop:
-    lda default_palette, Y
-    sta PPU_DATA
-    iny
-    cpy #32
-    bne @loop
-    rts
-.endproc
+.macro NES_INIT
+    sei ; disable interrupt as its never used.
+    cld ; disable decible mode
+
+    ldx #$FF
+    txs ; Make sure stack pointer starts at FF
+
+    inx ; increment x by 1 so it becomes $00
+    stx PPU_CTRL ; disable V in NMI
+    stx PPU_MASK ; Disable rendering
+    ;stx DMC_FREQ ; Mute APU
+
+
+    jsr WaitSync ; wait 
+    jsr ClearRam
+    jsr WaitSync
+    jsr CopyPallet
+    jsr HideAllAOMSprites ; All of these could be macros
+
+    lda #MASK_SPR ;| MASK_BG
+    sta PPU_MASK ; Enable sprite and background rendering
+    lda #CTRL_NMI|CTRL_SPR_1000
+    sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
+
+.endmacro
+
+
 
 ; We write 255 to all the x postions in the OAM. This way they are off screen. 
-; Would it be better to do it in the Y?
+; Would it be better to do it in the Y? as then we also dont have scanline issues????
 .proc HideAllAOMSprites
     lda #255
     ldx #0
@@ -26,6 +42,17 @@
     rts
 .endproc
 
+.proc CopyPallet
+    PPU_SETADDR $3f00 ; Replace with pallet define
+    ldy #$0
+@loop:
+    lda default_palette, Y
+    sta PPU_DATA
+    iny
+    cpy #32
+    bne @loop
+    rts
+.endproc
 
 .segment "RODATA"
 default_palette:

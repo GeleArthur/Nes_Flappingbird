@@ -21,6 +21,9 @@ oam: .res 256
     
 .endmacro
 
+
+
+
 ; Sets the nmi_ready to 1 and waits until the nmi sets it back to 0
 .macro WAIT_UNITL_FRAME_HAS_RENDERED
     inc nmi_ready
@@ -28,10 +31,6 @@ oam: .res 256
     lda nmi_ready
  	bne @waitVBlank ; If nmi_ready == 1 -> wait
 .endmacro
-
-
-
-
 
 ; nmi will call this onces its reached vblank
 .macro FRAME_IS_DONE_RENDERING
@@ -47,8 +46,7 @@ oam: .res 256
     
     COPY_OAM
 
-    ; Copy oam
-    ; Copy background
+    ; Optinal add setting the CTRL and MASK options but as long we dont change them it should be fine
 
     FRAME_IS_DONE_RENDERING 
 skipRenderingFrame:
@@ -63,55 +61,6 @@ skipRenderingFrame:
 .endproc
 
 
-
-; .proc nmi2
-;     SAVE_REGISTERS
-
-;     lda nmi_ready
-;     beq ppu_update_end ; check if NMI_Ready is still 1 
-
-;     ; Copy stuff in the ppu? Doesn;t really tell me what
-
-;     cmp #2
-;     bne cont_render
-;     lda #%00000000
-;     sta PPU_MASK
-;     ldx #0
-;     stx nmi_ready
-;     jmp ppu_update_end
-; cont_render:
-;     ldx #0
-;     stx PPU_SPRRAM_ADDRESS
-;     lda #>oam
-;     sta SPRITE_DMA
-
-;     lda #%10001000
-;     sta PPU_CONTROL
-;     lda PPU_STATUS
-;     lda #$3F
-;     sta PPU_VRAM_ADDRESS2
-;     stx PPU_VRAM_ADDRESS2
-;     ldx #0
-
-; loop:
-;     lda palette, x
-;     sta PPU_VRAM_IO
-;     inx
-;     cpx #32
-;     bcc loop
-
-;     lda #%00011110
-;     sta PPU_MASK
-;     ldx #0
-;     stx nmi_ready
-; ppu_update_end:
-;     pla
-;     tay
-;     pla
-;     tax
-;     pla
-;     rti
-; .endproc
 
 
 

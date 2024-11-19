@@ -85,8 +85,8 @@ MASK_TINT_BLUE	= %01000000	; Blue Background
 MASK_TINT_GREEN	= %10000000	; Green Background
 MASK_SPR	= %00010000 	; Sprites Visible
 MASK_BG		= %00001000 	; Backgrounds Visible
-MASK_SPR_CLIP	= %00000100 	; Sprites clipped on left column
-MASK_BG_CLIP	= %00000010 	; Background clipped on left column
+MASK_SPR_CLIP	= %00000100 	; Show sprites in leftmost 8 pixels of screen
+MASK_BG_CLIP	= %00000010 	; Show background in leftmost 8 pixels of screen
 MASK_COLOR	= %00000000 	; Display in Color
 MASK_MONO	= %00000001 	; Display in Monochrome
 
