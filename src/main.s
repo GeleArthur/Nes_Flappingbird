@@ -256,10 +256,7 @@ mainloop:
     jsr update_player_3
     jsr update_player_4
 
-    LDA #255
-    STA PPU_VRAM_ADDRESS1
-    LDA #239
-    STA PPU_VRAM_ADDRESS1
+    jsr scroll_background
     
  	; ensure our changes are rendered
  	lda #1
