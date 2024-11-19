@@ -66,6 +66,9 @@ oam: .res 256
 ;*****************************************************************
 ; Background code
 ;*****************************************************************
+; nameTables
+.include "../assets/nametable01.s"
+
 .include "background.s"
 
 ;*****************************************************************
@@ -240,6 +243,11 @@ mainloop:
     jsr update_player_3
     jsr update_player_4
 
+    LDA #255
+    STA PPU_VRAM_ADDRESS1
+    LDA #239
+    STA PPU_VRAM_ADDRESS1
+    
  	; ensure our changes are rendered
  	lda #1
  	sta nmi_ready
