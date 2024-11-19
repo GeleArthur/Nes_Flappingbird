@@ -37,25 +37,29 @@ INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 .segment "ZEROPAGE"
 					   ;        2 to turn rendering off next NMI
 
-p1_x: .res 1 ; Player 1 x position
-p1_y: .res 1 ; Player 1 y position
-p1_g: .res 1 ; Player 1 gravity acceleration
+p1_x:   .res 1 ; Player 1 x position
+p1_y:   .res 1 ; Player 1 y position
+p1_g:   .res 1 ; Player 1 gravity acceleration
 p1_g_c: .res 1 ; Player 1 Gravity Counter
+p1_j_m: .res 1 ; Player 1 Jump Memory              //stores the last y position of the player to allow to keep track of when the player can jump
 
-p2_x: .res 1 ; Player 2 x position
-p2_y: .res 1 ; Player 2 y position
-p2_g: .res 1 ; Player 2 gravity acceleration
-p2_g_c: .res 1 ; Player 1 Gravity Counter
+p2_x:   .res 1 ; Player 2 x position
+p2_y:   .res 1 ; Player 2 y position
+p2_g:   .res 1 ; Player 2 gravity acceleration
+p2_g_c: .res 1 ; Player 2 Gravity Counter
+p2_j_m: .res 1 ; Player 2 Jump Memory  
 
-p3_x: .res 1 ; Player 3 x position
-p3_y: .res 1 ; Player 3 y position
-p3_g: .res 1 ; Player 3 gravity acceleration
-p3_g_c: .res 1 ; Player 1 Gravity Counter
+p3_x:   .res 1 ; Player 3 x position
+p3_y:   .res 1 ; Player 3 y position
+p3_g:   .res 1 ; Player 3 gravity acceleration
+p3_g_c: .res 1 ; Player 3 Gravity Counter
+p3_j_m: .res 1 ; Player 3 Jump Memory  
 
-p4_x: .res 1 ; Player 4 x position
-p4_y: .res 1 ; Player 4 y position
-p4_g: .res 1 ; Player 4 gravity acceleration
-p4_g_c: .res 1 ; Player 1 Gravity Counter
+p4_x:   .res 1 ; Player 4 x position
+p4_y:   .res 1 ; Player 4 y position
+p4_g:   .res 1 ; Player 4 gravity acceleration
+p4_g_c: .res 1 ; Player 4 Gravity Counter
+p4_j_m: .res 1 ; Player 4 Jump Memory  
 
 
 
@@ -203,6 +207,9 @@ PLAYER_4 = 3
     lda #120
     sta p1_y
 
+    lda #$00FF
+    sta p1_j_m
+
     lda p1_x
     set_sprite_x_a PLAYER_1
 
@@ -276,13 +283,16 @@ PLAYER_4 = 3
         and #PAD_A
 
         beq NOT_GAMEPAD_A
-            ; Flying
+            ;jumping
             lda p1_y
             cmp #0
             beq NOT_GAMEPAD_A
+            cmp p1_j_m      ;compares the y with the last jump memory
+            bpl NOT_GAMEPAD_A
             sec
-            sbc #$09
+            sbc #$00FF
             sta p1_y
+            sta p1_j_m
             ;resets gravity acceleration
             lda #$0
             sta p1_g
