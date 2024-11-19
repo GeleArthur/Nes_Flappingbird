@@ -67,3 +67,30 @@ default_palette:
 .byte $0F,$14,$24,$34 ; sp1 purple
 .byte $0F,$1B,$2B,$3B ; sp2 teal
 .byte $0F,$12,$22,$1c ; sp3 marine
+
+
+; CLears the first nametable + attribute
+.segment "CODE"
+.proc ClearNameTableAndAttribute
+    PPU_SETADDR $2000
+
+ 	; empty nametable
+ 	lda #0
+ 	ldy #30 ; clear 30 rows
+ 	rowloop:
+ 		ldx #32 ; 32 columns
+ 		columnloop:
+ 			sta PPU_DATA
+ 			dex
+ 			bne columnloop
+ 		dey
+ 		bne rowloop
+
+ 	; empty attribute table
+ 	ldx #64 ; attribute table is 64 bytes
+ 	loop:
+ 		sta PPU_DATA
+ 		dex
+ 		bne loop
+ 	rts
+ .endproc
