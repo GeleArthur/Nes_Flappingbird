@@ -10,6 +10,22 @@
     rts
 .endproc
 
+; We write 255 to all the x postions in the OAM. This way they are off screen. 
+; Would it be better to do it in the Y?
+.proc HideAllAOMSprites
+    lda #255
+    ldx #0
+@loop:
+    sta oam, x
+    inx
+    inx
+    inx
+    inx
+    bne @loop
+
+    rts
+.endproc
+
 
 .segment "RODATA"
 default_palette:

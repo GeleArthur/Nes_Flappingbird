@@ -50,38 +50,38 @@
 
 
 
-.macro set_sprite_x index, xpos
+.macro OAM_WRITE_X index, xpos
    lda xpos
    sta oam + (index * 4) + 3
 .endmacro
 
-.macro set_sprite_x_a index
+.macro OAM_WRITE_X_A index
    sta oam + (index * 4) + 3
 .endmacro
 
-.macro set_sprite_y index, ypos
+.macro OAM_WRITE_Y index, ypos
    lda ypos
    sta oam + (index * 4) + 0
 .endmacro
 
-.macro set_sprite_y_a index
+.macro OAM_WRITE_Y_A index
    sta oam + (index * 4) + 0
 .endmacro
 
-.macro set_sprite_tile index, tile
+.macro OAM_WRITE_TILE index, tile
    lda tile
    sta oam + (index * 4) + 1
 .endmacro
 
-.macro set_sprite_tile_a index
+.macro OAM_WRITE_TILE_A index
    sta oam + (index * 4) + 1
 .endmacro
 
-.macro set_sprite_attr index, attr
+.macro OAM_WRITE_ATTRUDE index, attr
    lda attr
    sta oam + (index * 4) + 2
 .endmacro
 
-.macro set_sprite_attr_a index
+.macro OAM_WRITE_ATTRUDE_A index
    sta oam + (index * 4) + 2
 .endmacro
