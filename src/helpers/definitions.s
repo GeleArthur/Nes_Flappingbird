@@ -102,3 +102,13 @@ APU_NOISE_TIMER = $400F
 APU_DMC_CTRL    = $4010
 APU_CHAN_CTRL   = $4015
 APU_FRAME       = $4017
+
+; Controller bits
+PAD_A      = $80
+PAD_B      = $40
+PAD_SELECT = $20
+PAD_START  = $10
+PAD_U      = $08
+PAD_D      = $04
+PAD_L      = $02
+PAD_R      = $01

@@ -11,7 +11,7 @@
 .segment "TILES"
 .incbin "../assets/texture.chr"
 
-
+.include "controllers.s"
 .include "../assets/nametable01.s"
 .include "background.s"
 .include "playerInput.s"
