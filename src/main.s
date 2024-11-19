@@ -8,6 +8,9 @@
 .include "setup/nmi-vblank.s"
 .include "setup/ppu-setup.s"
 
+.segment "TILES"
+.incbin "../assets/texture.chr"
+
 .segment "CODE"
 .proc reset
     NES_INIT ; Setup nes
@@ -30,6 +33,3 @@ mainloop:
     jmp mainloop
 .endproc
 
-
-.segment "TILES"
-.incbin "../assets/texture.chr"
