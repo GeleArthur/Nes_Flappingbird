@@ -1,7 +1,23 @@
 .segment "ZEROPAGE"
+; If 1 the cpu is currently calulating the next frame.
+; If 0 the cpu is waiting for the ppu
 nmi_ready: .res 1
 
+
 .segment "CODE"
+
+.macro WAIT_UNITL_FRAME_HAS_RENDERED
+waitVBlank:
+    lda nmi_ready
+ 	cmp #0
+ 	bne waitVBlank
+.endmacro
+    
+.macro FRAME_IS_DONE_RENDERING
+    ldx #0
+    stx nmi_ready 
+.endmacro
+
 ; .proc nmi
 ;     pha ; Push A X Y on the stack. Not P?
 ; 	txa
@@ -57,9 +73,22 @@ nmi_ready: .res 1
 ; .endproc
 
 .proc nmi
+    SAVE_REGISTERS
+    lda nmi_ready
+    bne skipRenderingFrame ; If the nmi_ready is 1 we skip as the cpu is not ready rendering the frame
+    
+    
+
+    
+
+    FRAME_IS_DONE_RENDERING
+skipRenderingFrame:
+
+    RESTORE_REGISTERS
     rti
 .endproc
 
 .proc irq
     rti
 .endproc
+

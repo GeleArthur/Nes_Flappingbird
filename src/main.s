@@ -1,20 +1,17 @@
-.include "header.s"
-.include "vectors.s"
-.include "zeropage.s"
-.include "interrupt.s"
 .include "helpers/definitions.s"
 .include "helpers/macros.s"
 .include "helpers/subroutines.s"
 
+.include "header.s"
+.include "vectors.s"
+.include "zeropage.s"
+.include "nmi-vblank.s"
+
+
 .segment "OAM"
 oam: .res 256 
 
-; Why is this here????? we copy it from the ram anyway?
-.segment "BSS"
-palette: .res 32 ; Current palette
-
 .segment "CODE"
-
 .proc reset
     NES_INIT ; Disables everything and default setup stuff
     jmp WaitVBlank
@@ -30,17 +27,14 @@ palette: .res 32 ; Current palette
     jmp main
 .endproc
 
-
 .proc main
 mainloop:
- 	; skip reading controls if and change has not been drawn
- 	; lda nmi_ready
- 	; cmp #0
- 	; bne mainloop
+    WAIT_UNITL_FRAME_HAS_RENDERED
+
 
     ; ; ensure our changes are rendered
-    ; lda #1
-    ; sta nmi_ready
+    lda #1
+    sta nmi_ready
     jmp mainloop
 
 .endproc

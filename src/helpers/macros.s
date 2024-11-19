@@ -32,6 +32,7 @@
 .endmacro
 
 .macro PPU_SETADDR newaddress
+    PPU_CLEAR_W
     lda #>newaddress
     sta PPU_ADDR
     lda #<newaddress
@@ -43,6 +44,9 @@
     sta PPU_DATA
 .endmacro
 
+.macro PPU_CLEAR_W
+    lda PPU_STATUS
+.endmacro
 
 
 
