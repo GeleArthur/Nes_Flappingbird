@@ -49,7 +49,7 @@ LoadAttributeLoop:
   INC scrollPos
   LDA scrollPos
   STA PPU_SCROLL
-  LDA #239
+  LDA #0
   STA PPU_SCROLL
   RTS
 .endproc

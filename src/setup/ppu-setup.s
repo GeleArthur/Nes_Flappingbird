@@ -11,16 +11,13 @@
     ;stx DMC_FREQ ; Mute APU
 
 
+
     jsr WaitSync ; wait 
     jsr ClearRam
     jsr WaitSync
     jsr CopyPallet
     jsr HideAllAOMSprites ; All of these could be macros
-
-    lda #MASK_SPR | MASK_BG
-    sta PPU_MASK ; Enable sprite and background rendering
-    lda #CTRL_NMI|CTRL_SPR_1000
-    sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
+    jsr ClearNameTableAndAttribute
 
 .endmacro
 
@@ -94,3 +91,7 @@ default_palette:
  		bne loop
  	rts
  .endproc
+
+.proc TurnOffPPU
+    
+.endproc
