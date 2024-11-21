@@ -57,7 +57,7 @@ LoadAttributeLoop:
   INC scrollPos
   LDA scrollPos
   STA PPU_VRAM_ADDRESS1
-  LDA #239
+  LDA #0
   STA PPU_VRAM_ADDRESS1
   RTS
 .endproc

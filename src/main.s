@@ -122,13 +122,14 @@ cont_render:
     lda #>oam
     sta SPRITE_DMA
 
-    lda #%10001000
-    sta PPU_CONTROL
     lda PPU_STATUS
     lda #$3F
     sta PPU_VRAM_ADDRESS2
     stx PPU_VRAM_ADDRESS2
     ldx #0
+    
+    lda #%10001000
+    sta PPU_CONTROL
 
 loop:
     lda palette, x
@@ -248,6 +249,8 @@ mainloop:
  	lda nmi_ready
  	cmp #0
  	bne mainloop
+
+
 
     jsr gamepad_poll
 
