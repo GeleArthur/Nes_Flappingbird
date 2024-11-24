@@ -39,6 +39,7 @@ if __name__ == "__main__":
     observer.schedule(event_handler, folder, recursive=True) 
     # Start the observer
     observer.start()
+    subprocess.run([script_path])
     print(f"Watching folder: {folder}")
 
     try:
