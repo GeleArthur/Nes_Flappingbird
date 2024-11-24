@@ -33,7 +33,7 @@ LoadBackgroundLoop:
 :
 
 LoadAttribute:
-  PPU_SETADDR $32C0
+  PPU_SETADDR $23C0
   LDX #$00              ; start out at 0
 
 LoadAttributeLoop:
