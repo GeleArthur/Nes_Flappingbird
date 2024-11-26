@@ -5,26 +5,27 @@ p1_x:   .res 1 ; Player 1 x position
 p1_y:   .res 1 ; Player 1 y position
 p1_g:   .res 1 ; Player 1 gravity acceleration
 p1_g_c: .res 1 ; Player 1 Gravity Counter
-p1_j_m: .res 1 ; Player 1 Jump Memory              //stores the last y position of the player to allow to keep track of when the player can jump
+p1_j_c: .res 1 ; Player 1 Jump Counter            //stores the last y position of the player to allow to keep track of when the player can jump
 
 p2_x:   .res 1 ; Player 2 x position
 p2_y:   .res 1 ; Player 2 y position
 p2_g:   .res 1 ; Player 2 gravity acceleration
 p2_g_c: .res 1 ; Player 2 Gravity Counter
-p2_j_m: .res 1 ; Player 2 Jump Memory  
+p2_j_c: .res 1 ; Player 2 Jump Counter   
 
 p3_x:   .res 1 ; Player 3 x position
 p3_y:   .res 1 ; Player 3 y position
 p3_g:   .res 1 ; Player 3 gravity acceleration
 p3_g_c: .res 1 ; Player 3 Gravity Counter
-p3_j_m: .res 1 ; Player 3 Jump Memory  
+p3_j_c: .res 1 ; Player 3 Jump Counter  
 
 p4_x:   .res 1 ; Player 4 x position
 p4_y:   .res 1 ; Player 4 y position
 p4_g:   .res 1 ; Player 4 gravity acceleration
 p4_g_c: .res 1 ; Player 4 Gravity Counter
-p4_j_m: .res 1 ; Player 4 Jump Memory  
+p4_j_c: .res 1 ; Player 4 Jump Counter  
 
+p_h_j_b:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
 
 
 .segment "CODE"
@@ -41,8 +42,8 @@ PLAYER_4 = 3
     lda #120
     sta p1_y
 
-    lda #$00FF
-    sta p1_j_m
+    lda #$00
+    sta p1_j_c
 
     lda p1_x
     OAM_WRITE_X_A PLAYER_1
@@ -113,6 +114,10 @@ PLAYER_4 = 3
             sta p1_y
 
     NOT_GAMEPAD_DOWN:
+        lda #%00001110
+        and p_h_j_b ;flip p_h_j_b to false 
+        sta p_h_j_b
+        
         lda gamepad1
         and #PAD_A
 
@@ -121,12 +126,17 @@ PLAYER_4 = 3
             lda p1_y
             cmp #0
             beq NOT_GAMEPAD_A
-            cmp p1_j_m      ;compares the y with the last jump memory
-            bpl NOT_GAMEPAD_A
+            lda #%00000001
+            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
+            sta p_h_j_b 
+            lda #$08   ;max value of p1_j_c ;determines how long the player can hold A for and keep going up
+            cmp p1_j_c      ;compares the J counter with its max value
+            beq NOT_GAMEPAD_A 
+            lda p1_y
             sec
-            sbc #$00FF
-            sta p1_y
-            sta p1_j_m
+            sbc #$07   ;determines the intesity of elevation
+            sta p1_y   
+            inc p1_j_c
             ;resets gravity acceleration
             lda #$0
             sta p1_g
@@ -142,7 +152,7 @@ PLAYER_4 = 3
 
     inc p1_g_c
     lda #$15  ;value for the counter to reach
-    cmp p1_g_c ;check if the player gravity counter is $FF
+    cmp p1_g_c ;check if the player gravity counter is $15
 
     bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
     inc p1_g
@@ -150,6 +160,20 @@ PLAYER_4 = 3
     sta p1_g_c
 
     BRANCH_ON_TERMINAL_VELOCITY:
+
+    lda #$00 ;time it takes to reset counter
+    cmp p1_g ;compare it
+    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
+    ;if it does equal the time to reset counter than reset values to 0
+    lda p_h_j_b
+    and #%00000001  ;checks for that players bit
+    cmp #$0
+    bne SET_PLAYER_Y
+    ;if the jump button isnt being held down than resets counter
+    lda #$0
+    sta p1_j_c
+
+    SET_PLAYER_Y:
     lda p1_y
     sec
     adc p1_g ;gravity 
@@ -236,17 +260,29 @@ PLAYER_4 = 3
             sta p2_y
 
     NOT_GAMEPAD_DOWN:
+        lda #%00001101
+        and p_h_j_b ;flip p_h_j_b to false 
+        sta p_h_j_b
+        
         lda gamepad2
         and #PAD_A
 
         beq NOT_GAMEPAD_A
-            ; Flying
+            ;jumping
             lda p2_y
             cmp #0
             beq NOT_GAMEPAD_A
+            lda #%00000010
+            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
+            sta p_h_j_b 
+            lda #$08   ;max value of p2_j_c ;determines how long the player can hold A for and keep going up
+            cmp p2_j_c      ;compares the J counter with its max value
+            beq NOT_GAMEPAD_A 
+            lda p2_y
             sec
-            sbc #$09
-            sta p2_y
+            sbc #$07   ;determines the intesity of elevation
+            sta p2_y   
+            inc p2_j_c
             ;resets gravity acceleration
             lda #$0
             sta p2_g
@@ -270,6 +306,20 @@ PLAYER_4 = 3
     sta p2_g_c
 
     BRANCH_ON_TERMINAL_VELOCITY:
+    
+    lda #$00 ;time it takes to reset counter
+    cmp p2_g ;compare it
+    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
+    ;if it does equal the time to reset counter than reset values to 0
+    lda p_h_j_b
+    and #%00000010  ;checks for that players bit
+    cmp #$0
+    bne SET_PLAYER_Y
+    ;if the jump button isnt being held down than resets counter
+    lda #$0
+    sta p2_j_c
+
+    SET_PLAYER_Y:
     lda p2_y
     sec
     adc p2_g ;gravity 
@@ -356,17 +406,29 @@ PLAYER_4 = 3
             sta p3_y
 
     NOT_GAMEPAD_DOWN:
+        lda #%00001011
+        and p_h_j_b ;flip p_h_j_b to false 
+        sta p_h_j_b
+        
         lda gamepad3
         and #PAD_A
 
         beq NOT_GAMEPAD_A
-            ; Flying
+            ;jumping
             lda p3_y
             cmp #0
             beq NOT_GAMEPAD_A
+            lda #%00000100
+            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
+            sta p_h_j_b 
+            lda #$08   ;max value of p3_j_c ;determines how long the player can hold A for and keep going up
+            cmp p3_j_c      ;compares the J counter with its max value
+            beq NOT_GAMEPAD_A 
+            lda p3_y
             sec
-            sbc #$09
-            sta p3_y
+            sbc #$07   ;determines the intesity of elevation
+            sta p3_y   
+            inc p3_j_c
             ;resets gravity acceleration
             lda #$0
             sta p3_g
@@ -390,6 +452,20 @@ PLAYER_4 = 3
     sta p3_g_c
 
     BRANCH_ON_TERMINAL_VELOCITY:
+
+    lda #$00 ;time it takes to reset counter
+    cmp p3_g ;compare it
+    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
+    ;if it does equal the time to reset counter than reset values to 0
+    lda p_h_j_b
+    and #%00000100  ;checks for that players bit
+    cmp #$0
+    bne SET_PLAYER_Y
+    ;if the jump button isnt being held down than resets counter
+    lda #$0
+    sta p3_j_c
+
+    SET_PLAYER_Y:
     lda p3_y
     sec
     adc p3_g ;gravity 
@@ -476,17 +552,29 @@ PLAYER_4 = 3
             sta p4_y
 
     NOT_GAMEPAD_DOWN:
+        lda #%00000111
+        and p_h_j_b ;flip p_h_j_b to false 
+        sta p_h_j_b
+        
         lda gamepad4
         and #PAD_A
 
         beq NOT_GAMEPAD_A
-            ; Flying
+            ;jumping
             lda p4_y
             cmp #0
             beq NOT_GAMEPAD_A
+            lda #%00001000
+            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
+            sta p_h_j_b 
+            lda #$08   ;max value of p2_j_c ;determines how long the player can hold A for and keep going up
+            cmp p4_j_c      ;compares the J counter with its max value
+            beq NOT_GAMEPAD_A 
+            lda p4_y
             sec
-            sbc #$09
-            sta p4_y
+            sbc #$07   ;determines the intesity of elevation
+            sta p4_y   
+            inc p4_j_c
             ;resets gravity acceleration
             lda #$0
             sta p4_g
@@ -510,6 +598,20 @@ PLAYER_4 = 3
     sta p4_g_c
 
     BRANCH_ON_TERMINAL_VELOCITY:
+
+    lda #$00 ;time it takes to reset counter
+    cmp p4_g ;compare it
+    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
+    ;if it does equal the time to reset counter than reset values to 0
+    lda p_h_j_b
+    and #%00001000  ;checks for that players bit
+    cmp #$0
+    bne SET_PLAYER_Y
+    ;if the jump button isnt being held down than resets counter
+    lda #$0
+    sta p4_j_c
+
+    SET_PLAYER_Y:
     lda p4_y
     sec
     adc p4_g ;gravity 
