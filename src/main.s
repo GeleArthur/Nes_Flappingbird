@@ -61,13 +61,9 @@
     ; jsr update_player_3
     ; jsr update_player_4
 
-    jsr scroll_background
     jsr CollisionPlayer1
+    jsr scroll_background
 
-    ; jsr scroll_background
-
-    LDA #0
-    STA PPU_SCROLL
 
     WAIT_UNITL_FRAME_HAS_RENDERED
     jmp main

@@ -10,7 +10,7 @@ scrollPos: .res 1
 
 .proc setup_background
 LoadBackground:
-  LDA #255
+  LDA #0
   STA scrollPos
   PPU_SETADDR $2000
   LDX #$00              ; start out at 0

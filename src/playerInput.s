@@ -177,7 +177,7 @@ PLAYER_4 = 3
     lda p1_y
     sec
     adc p1_g ;gravity 
-    sta p1_y
+    ;sta p1_y
     OAM_WRITE_Y_A PLAYER_1
 
     rts
