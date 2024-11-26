@@ -55,7 +55,7 @@
 default_palette:
 .byte $2C ; background color. If you change this also change the mirrored background color
 .byte $11,$26,$37 ; bg0 purple/pink
-.byte $0F,$09,$19,$29 ; bg1 green
+.byte $0F,$09,$19,$1D ; bg1 green
 .byte $0F,$01,$11,$21 ; bg2 blue
 .byte $0F,$00,$10,$30 ; bg3 greyscale
 
