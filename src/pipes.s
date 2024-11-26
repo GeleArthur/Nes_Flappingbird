@@ -4,10 +4,10 @@ pipeBottomHighToLow: .res 1
 
 .segment "RODATA"
 PipeData: ; The bird needs to be between these 2
-.byte 50, 112
-.byte 0, 144
-.byte 0, 112
-.byte 0, 144
+.byte 5*8, 112
+.byte 9*8, 144
+.byte 5*8, 112
+.byte 9*7, 144
 
 
 
