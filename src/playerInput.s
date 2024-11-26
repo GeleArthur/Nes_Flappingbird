@@ -399,7 +399,7 @@ PLAYER_4 = 3
     rts
 .endproc
 
-.proc setup_player_4
+.proc SetupPlayer4
 
     lda #180 + 8
     sta p4_x

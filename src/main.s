@@ -15,6 +15,7 @@
 .include "../assets/nametable01.s"
 .include "background.s"
 .include "playerInput.s"
+.include "pipes.s"
 
 
 .segment "CODE"
@@ -36,9 +37,9 @@
     
 
     jsr setup_player_1
-    jsr setup_player_2
-    jsr setup_player_3
-    jsr setup_player_4
+    ; jsr setup_player_2
+    ; jsr setup_player_3
+    ; jsr setup_player_4
 
     jsr setup_background
 
@@ -56,11 +57,17 @@
     jsr gamepad_poll
 
     jsr update_player_1
-    jsr update_player_2
-    jsr update_player_3
-    jsr update_player_4
+    ; jsr update_player_2
+    ; jsr update_player_3
+    ; jsr update_player_4
 
     jsr scroll_background
+    jsr CollisionPlayer1
+
+    ; jsr scroll_background
+
+    LDA #0
+    STA PPU_SCROLL
 
     WAIT_UNITL_FRAME_HAS_RENDERED
     jmp main

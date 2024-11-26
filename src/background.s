@@ -1,3 +1,5 @@
+.include "../assets/pipes.s"
+
 .segment "ZEROPAGE"
 nametablePtr01: .res 1
 nametablePtr02: .res 1
@@ -15,9 +17,9 @@ LoadBackground:
   LDY #$00
 
 LoadBackgroundLoop:
-  lda #<nametable01
+  lda #<pipesNameTable
   sta nametablePtr01
-  lda #>nametable01
+  lda #>pipesNameTable
   sta nametablePtr02
   ldx #4 ; do this loop 4 times
   ldy #0
@@ -37,7 +39,7 @@ LoadAttribute:
   LDX #$00              ; start out at 0
 
 LoadAttributeLoop:
-  LDA attributeTable01, x      ; load data from address (attribute + the value in x)
+  LDA PipesattributeTable, x      ; load data from address (attribute + the value in x)
   STA PPU_DATA             ; write to PPU
   INX                   ; X = X + 1
   CPX #$40              ; Compare X to hex $08, decimal 8 - copying 8 bytes

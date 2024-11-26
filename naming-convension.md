@@ -2,7 +2,7 @@
 
 - subroutine = CamelCase
 - jump marker = lowerCamelCase
-- global varible maker = lower_underscore ; Not really happy with this
+- global varible maker = lower ; Not really happy with this
 - marco = UPPER_UNDERSCORE
 - definition = UPPER_UNDERSCORE 
 
