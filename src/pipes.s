@@ -31,7 +31,7 @@ PipeData: ; The bird needs to be between these 2
     lsr 
     lsr 
     lsr ; Divide by 64
-    asl ; Offset * 2
+    asl ; stride * 2
     tax ; Put in x
 
     lda PipeData, x
