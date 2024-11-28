@@ -35,7 +35,7 @@ PLAYER_2 = 1
 PLAYER_3 = 2
 PLAYER_4 = 3
 
-.proc setup_player_1
+.proc SetupPlayer1
     lda #180
     sta p1_x
 
@@ -59,9 +59,9 @@ PLAYER_4 = 3
 
 .endproc
 
-.proc update_player_1
+.proc UpdatePlayer1
 
-    lda gamepad1
+    lda gamepad_1
     and #PAD_L 
 
     beq NOT_GAMEPAD_LEFT
@@ -75,7 +75,7 @@ PLAYER_4 = 3
     
     NOT_GAMEPAD_LEFT:
 
-        lda gamepad1
+        lda gamepad_1
         and #PAD_R
 
         beq NOT_GAMEPAD_RIGHT
@@ -88,7 +88,7 @@ PLAYER_4 = 3
             sta p1_x
 
     NOT_GAMEPAD_RIGHT:
-        lda gamepad1
+        lda gamepad_1
         and #PAD_U
 
         beq NOT_GAMEPAD_UP
@@ -101,7 +101,7 @@ PLAYER_4 = 3
             sta p1_y
 
     NOT_GAMEPAD_UP:
-        lda gamepad1
+        lda gamepad_1
         and #PAD_D
 
         beq NOT_GAMEPAD_DOWN
@@ -118,7 +118,7 @@ PLAYER_4 = 3
         and p_h_j_b ;flip p_h_j_b to false 
         sta p_h_j_b
         
-        lda gamepad1
+        lda gamepad_1
         and #PAD_A
 
         beq NOT_GAMEPAD_A
@@ -183,7 +183,7 @@ PLAYER_4 = 3
     rts
 .endproc
 
-.proc setup_player_2
+.proc SetupPlayer2
     lda #180 + 8
     sta p2_x
 
@@ -205,9 +205,9 @@ PLAYER_4 = 3
 
 .endproc
 
-.proc update_player_2
+.proc UpdatePlayer2
 
-    lda gamepad2
+    lda gamepad_2
     and #PAD_L 
 
     beq NOT_GAMEPAD_LEFT
@@ -221,7 +221,7 @@ PLAYER_4 = 3
     
     NOT_GAMEPAD_LEFT:
 
-        lda gamepad2
+        lda gamepad_2
         and #PAD_R
 
         beq NOT_GAMEPAD_RIGHT
@@ -234,7 +234,7 @@ PLAYER_4 = 3
             sta p2_x
 
     NOT_GAMEPAD_RIGHT:
-        lda gamepad2
+        lda gamepad_2
         and #PAD_U
 
         beq NOT_GAMEPAD_UP
@@ -247,7 +247,7 @@ PLAYER_4 = 3
             sta p2_y
 
     NOT_GAMEPAD_UP:
-        lda gamepad2
+        lda gamepad_2
         and #PAD_D
 
         beq NOT_GAMEPAD_DOWN
@@ -264,7 +264,7 @@ PLAYER_4 = 3
         and p_h_j_b ;flip p_h_j_b to false 
         sta p_h_j_b
         
-        lda gamepad2
+        lda gamepad_2
         and #PAD_A
 
         beq NOT_GAMEPAD_A
@@ -329,7 +329,7 @@ PLAYER_4 = 3
     rts
 .endproc
 
-.proc setup_player_3
+.proc SetupPlayer3
     lda #180
     sta p3_x
 
@@ -351,9 +351,9 @@ PLAYER_4 = 3
 
 .endproc
 
-.proc update_player_3
+.proc UpdatePlayer3
 
-    lda gamepad3
+    lda gamepad_3
     and #PAD_L 
 
     beq NOT_GAMEPAD_LEFT
@@ -367,7 +367,7 @@ PLAYER_4 = 3
     
     NOT_GAMEPAD_LEFT:
 
-        lda gamepad3
+        lda gamepad_3
         and #PAD_R
 
         beq NOT_GAMEPAD_RIGHT
@@ -380,7 +380,7 @@ PLAYER_4 = 3
             sta p3_x
 
     NOT_GAMEPAD_RIGHT:
-        lda gamepad3
+        lda gamepad_3
         and #PAD_U
 
         beq NOT_GAMEPAD_UP
@@ -393,7 +393,7 @@ PLAYER_4 = 3
             sta p3_y
 
     NOT_GAMEPAD_UP:
-        lda gamepad3
+        lda gamepad_3
         and #PAD_D
 
         beq NOT_GAMEPAD_DOWN
@@ -410,7 +410,7 @@ PLAYER_4 = 3
         and p_h_j_b ;flip p_h_j_b to false 
         sta p_h_j_b
         
-        lda gamepad3
+        lda gamepad_3
         and #PAD_A
 
         beq NOT_GAMEPAD_A
@@ -497,9 +497,9 @@ PLAYER_4 = 3
 
 .endproc
 
-.proc update_player_4
+.proc UpdatePlayer4
 
-    lda gamepad4
+    lda gamepad_4
     and #PAD_L 
 
     beq NOT_GAMEPAD_LEFT
@@ -513,7 +513,7 @@ PLAYER_4 = 3
     
     NOT_GAMEPAD_LEFT:
 
-        lda gamepad4
+        lda gamepad_4
         and #PAD_R
 
         beq NOT_GAMEPAD_RIGHT
@@ -526,7 +526,7 @@ PLAYER_4 = 3
             sta p4_x
 
     NOT_GAMEPAD_RIGHT:
-        lda gamepad4
+        lda gamepad_4
         and #PAD_U
 
         beq NOT_GAMEPAD_UP
@@ -539,7 +539,7 @@ PLAYER_4 = 3
             sta p4_y
 
     NOT_GAMEPAD_UP:
-        lda gamepad4
+        lda gamepad_4
         and #PAD_D
 
         beq NOT_GAMEPAD_DOWN
@@ -556,7 +556,7 @@ PLAYER_4 = 3
         and p_h_j_b ;flip p_h_j_b to false 
         sta p_h_j_b
         
-        lda gamepad4
+        lda gamepad_4
         and #PAD_A
 
         beq NOT_GAMEPAD_A

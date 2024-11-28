@@ -1,31 +1,32 @@
 .segment "ZEROPAGE"
 
 ; We use a ForScore NES
-gamepad1:		.res 1 ; Controller 1
-gamepad2:		.res 1 ; Controller 2
-gamepad3:		.res 1 ; Controller 3
-gamepad4:		.res 1 ; Controlelr 4
+gamepad_1:		.res 1 ; Controller 1
+gamepad_2:		.res 1 ; Controller 2
+gamepad_3:		.res 1 ; Controller 3
+gamepad_4:		.res 1 ; Controller 4
 
 .segment "CODE"
-.proc gamepad_poll
+.proc GamepadPoll
 	lda #$01
 	sta JOYPAD1
 	sta JOYPAD2
-	sta gamepad1
+	sta gamepad_1
 
 	lda #$00
 	sta JOYPAD1
 	sta JOYPAD2
+	clc
 
 	ldx #8
 	loop1:
 		lda JOYPAD1
 		lsr a
-		rol gamepad1
+		rol gamepad_1
 
 		lda JOYPAD2
 		lsr
-		rol gamepad2
+		rol gamepad_2
 
 		dex
 		bne loop1
@@ -34,11 +35,11 @@ gamepad4:		.res 1 ; Controlelr 4
 	loop2:
 		lda JOYPAD1
 		lsr a
-		rol gamepad3
+		rol gamepad_3
 
 		lda JOYPAD2
 		lsr
-		rol gamepad4
+		rol gamepad_4
 
 		dex
 		bne loop2
