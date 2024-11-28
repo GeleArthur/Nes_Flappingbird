@@ -36,12 +36,12 @@
 
     
 
-    jsr setup_player_1
-    ; jsr setup_player_2
-    ; jsr setup_player_3
-    ; jsr setup_player_4
+    jsr SetupPlayer1
+    ; jsr SetupPlayer2
+    ; jsr SetupPlayer3
+    ; jsr SetupPlayer4
 
-    jsr setup_background
+    jsr SetupBackground
 
 
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
@@ -49,23 +49,23 @@
     lda #CTRL_NMI|CTRL_SPR_1000
     sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
 
-    jmp main
+    jmp Main
 .endproc
 
-.proc main
+.proc Main
 
-    jsr gamepad_poll
+    jsr GamepadPoll
 
-    jsr update_player_1
-    ; jsr update_player_2
-    ; jsr update_player_3
-    ; jsr update_player_4
+    jsr UpdatePlayer1
+    ; jsr UpdatePlayer2
+    ; jsr UpdatePlayer3
+    ; jsr UpdatePlayer4
 
     jsr CollisionPlayer1
-    jsr scroll_background
+    jsr ScrollBackground
 
 
     WAIT_UNITL_FRAME_HAS_RENDERED
-    jmp main
+    jmp Main
 .endproc
 

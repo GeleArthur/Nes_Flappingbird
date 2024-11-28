@@ -3,7 +3,7 @@ pipeUpperHighToLow: .res 1
 pipeBottomHighToLow: .res 1
 
 .segment "RODATA"
-PipeData: ; The bird needs to be between these 2
+pipe_data: ; The bird needs to be between these 2
 .byte 5*8, 112
 .byte 9*8, 144
 .byte 5*8, 112
@@ -17,12 +17,12 @@ PipeData: ; The bird needs to be between these 2
     OAM_WRITE_Y 3, #255
     OAM_WRITE_TILE 3, #2
 
-    lda scrollPos
+    lda scroll_pos
     adc p1_x
     and #%00100000
     beq end
 
-    lda scrollPos
+    lda scroll_pos
     adc p1_x
 
     lsr 
@@ -34,11 +34,11 @@ PipeData: ; The bird needs to be between these 2
     asl ; stride * 2
     tax ; Put in x
 
-    lda PipeData, x
+    lda pipe_data, x
     cmp p1_y
     bpl collided
 
-    lda PipeData+1, x
+    lda pipe_data+1, x
     cmp p1_y
     bmi collided
 
