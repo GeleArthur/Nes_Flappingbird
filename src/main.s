@@ -48,6 +48,10 @@
 
     jsr SetupBackground
 
+    lda #CTRL_NMI
+    sta PPU_CTRL ; Enable NMI.
+
+    WAIT_UNITL_FRAME_HAS_RENDERED ; We are done rendering lets wait for the ppu to be at the vblank before we start rendering
 
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
     sta PPU_MASK ; Enable sprite and background rendering
