@@ -16,11 +16,16 @@
 .include "background.s"
 .include "playerInput.s"
 .include "pipes.s"
+.include "StartScreen.s"
 
 
 .segment "CODE"
 .proc reset
     NES_INIT ; Setup nes
+
+
+    STARTSCREEN
+
 
 
     ; INIT GAME CODE
