@@ -4,7 +4,6 @@
 
 .include "setup/header.s"
 .include "setup/vectors.s"
-.include "setup/zeropage.s"
 .include "setup/nmi-vblank.s"
 .include "setup/ppu-setup.s"
 
@@ -16,17 +15,15 @@
 .include "background.s"
 .include "playerInput.s"
 .include "pipes.s"
-.include "StartScreen.s"
+.include "startScreen.s"
+.include "pauseGame.s"
 
 
 .segment "CODE"
 .proc reset
     NES_INIT ; Setup nes
-
-
-    STARTSCREEN
-
-
+    
+    jsr StartScreen
 
     ; INIT GAME CODE
     OAM_WRITE_X 0, #100
@@ -72,6 +69,8 @@
 
     jsr CollisionPlayer1
     jsr ScrollBackground
+
+    jsr PauseGameCheck
 
 
     WAIT_UNITL_FRAME_HAS_RENDERED

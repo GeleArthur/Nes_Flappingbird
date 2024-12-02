@@ -92,6 +92,9 @@ default_palette:
  	rts
  .endproc
 
-.proc TurnOffPPU
-    
-.endproc
+; .proc TurnOffPPU
+;     lda <PPU_MASK_VAR
+;     and #%11100111
+;     sta <PPU_MASK_VAR
+;     jmp _ppu_wait_nmi
+; .endproc

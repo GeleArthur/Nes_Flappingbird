@@ -1,17 +1,14 @@
 .segment "CODE"
-.macro STARTSCREEN
+.proc StartScreen
     lda #0
     sta PPU_MASK 
     lda #0
     sta PPU_CTRL
-
-
-    
     
     lda #CTRL_NMI
     sta PPU_CTRL
 
-    ; WAIT_UNITL_FRAME_HAS_RENDERED
+    WAIT_UNITL_FRAME_HAS_RENDERED
 
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
     sta PPU_MASK ; Enable sprite and background rendering
@@ -30,5 +27,11 @@
     sta PPU_MASK 
     lda #0
     sta PPU_CTRL
+    
+    ; CALL TO pauseGame.s :(
+    lda #1
+    sta game_is_paused
 
-.endmacro
+    rts
+
+.endproc
