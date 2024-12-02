@@ -13,9 +13,9 @@ pipe_data: ; The bird needs to be between these 2
 
 .segment "CODE"
 .proc CollisionPlayer1
-    OAM_WRITE_X 3, #100
-    OAM_WRITE_Y 3, #255
-    OAM_WRITE_TILE 3, #2
+    OAM_WRITE_X 32, #100
+    OAM_WRITE_Y 32, #255
+    OAM_WRITE_TILE 32, #2
 
     lda scroll_pos
     adc player1+PlayerStruct::xpos
@@ -46,9 +46,9 @@ pipe_data: ; The bird needs to be between these 2
 
 
 collided:
-    OAM_WRITE_X 3, #100
-    OAM_WRITE_Y 3, player1+PlayerStruct::ypos
-    OAM_WRITE_TILE 3, #2
+    OAM_WRITE_X 32, #100
+    OAM_WRITE_Y 32, player1+PlayerStruct::ypos
+    OAM_WRITE_TILE 32, #2
 
 
 end:

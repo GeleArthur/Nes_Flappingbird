@@ -16,26 +16,24 @@ player4: .res .sizeof(PlayerStruct)
 ; Arthur: Use the other 4 to see if they are dead?
 p_h_j_b:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
 
-
-
 .segment "CODE"
 
-PLAYER_1 = 0
-PLAYER_1B = 4
-PLAYER_1C = 5
-PLAYER_1D = 6
+PLAYER_1A = 0
+PLAYER_1B = 1
+PLAYER_1C = 2
+PLAYER_1D = 3
 
-PLAYER_2 = 4
+PLAYER_2A = 4
 PLAYER_2B = 5
 PLAYER_2C = 6
 PLAYER_2D = 7
 
-PLAYER_3 = 8
+PLAYER_3A = 8
 PLAYER_3B = 9
 PLAYER_3C = 10
 PLAYER_3D = 11
 
-PLAYER_4 = 12
+PLAYER_4A = 12
 PLAYER_4B = 13
 PLAYER_4C = 14
 PLAYER_4D = 15
@@ -51,7 +49,7 @@ PLAYER_4D = 15
     sta player1+PlayerStruct::jumpCounter
 
     lda player1+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_1
+    OAM_WRITE_X_A PLAYER_1A
     OAM_WRITE_X_A PLAYER_1C 
     sec 
     adc #7
@@ -59,19 +57,19 @@ PLAYER_4D = 15
     OAM_WRITE_X_A PLAYER_1D 
 
 
-    lda player1+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_1
-    OAM_WRITE_Y_A PLAYER_1B
-    OAM_WRITE_Y_A PLAYER_1C
-    OAM_WRITE_Y_A PLAYER_1D
+    ; lda player1+PlayerStruct::ypos
+    ; OAM_WRITE_Y_A PLAYER_1A
+    ; OAM_WRITE_Y_A PLAYER_1B
+    ; OAM_WRITE_Y_A PLAYER_1C
+    ; OAM_WRITE_Y_A PLAYER_1D
 
 
-    OAM_WRITE_TILE PLAYER_1, #1
+    OAM_WRITE_TILE PLAYER_1A, #1
     OAM_WRITE_TILE PLAYER_1B, #2
     OAM_WRITE_TILE PLAYER_1C, #3
     OAM_WRITE_TILE PLAYER_1D, #4
 
-    OAM_WRITE_ATTRUDE PLAYER_1, %10000000
+    OAM_WRITE_ATTRIBUTE PLAYER_1A, OAM_ATRIB_FLIP_VERTICALLY
 
     rts
 
@@ -106,32 +104,6 @@ PLAYER_4D = 15
             sta player1+PlayerStruct::xpos
 
     NOT_GAMEPAD_RIGHT:
-        lda gamepad_1
-        and #PAD_U
-
-        beq NOT_GAMEPAD_UP
-            ; GOING UP
-            lda player1+PlayerStruct::ypos
-            cmp #0
-            beq NOT_GAMEPAD_UP
-            sec
-            sbc #1
-            sta player1+PlayerStruct::ypos
-
-    NOT_GAMEPAD_UP:
-        lda gamepad_1
-        and #PAD_D
-
-        beq NOT_GAMEPAD_DOWN
-            ; GOING DOWN
-            lda player1+PlayerStruct::ypos
-            cmp #230
-            beq NOT_GAMEPAD_DOWN
-            clc
-            adc #1
-            sta player1+PlayerStruct::ypos
-
-    NOT_GAMEPAD_DOWN:
         lda #%00001110
         and p_h_j_b ;flip p_h_j_b to false 
         sta p_h_j_b
@@ -162,7 +134,7 @@ PLAYER_4D = 15
     NOT_GAMEPAD_A:
 
     lda player1+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_1
+    OAM_WRITE_X_A PLAYER_1A
 
     lda #$03
     cmp player1+PlayerStruct::gravity
@@ -192,7 +164,7 @@ PLAYER_4D = 15
     sec
     adc player1+PlayerStruct::gravity ;gravity 
     sta player1+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_1
+    OAM_WRITE_Y_A PLAYER_1A
     OAM_WRITE_Y_A PLAYER_1B
     sec 
     adc #7
@@ -212,14 +184,14 @@ PLAYER_4D = 15
 
 
     lda player2+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_2
+    OAM_WRITE_X_A PLAYER_2A
 
     lda player2+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_2
+    OAM_WRITE_Y_A PLAYER_2A
 
-    OAM_WRITE_TILE PLAYER_2, #2
+    OAM_WRITE_TILE PLAYER_2A, #2
 
-    OAM_WRITE_ATTRUDE PLAYER_2, %10000000
+    OAM_WRITE_ATTRIBUTE PLAYER_2A, %10000000
 
     rts
 
@@ -310,7 +282,7 @@ PLAYER_4D = 15
     NOT_GAMEPAD_A:
 
     lda player2+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_2
+    OAM_WRITE_X_A PLAYER_2A
 
     lda #$03
     cmp player2+PlayerStruct::gravity
@@ -340,7 +312,7 @@ PLAYER_4D = 15
     sec
     adc player2+PlayerStruct::gravity ;gravity 
     sta player2+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_2
+    OAM_WRITE_Y_A PLAYER_2A
 
     rts
 .endproc
@@ -354,14 +326,14 @@ PLAYER_4D = 15
 
 
     lda player3+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_3
+    OAM_WRITE_X_A PLAYER_3A
 
     lda player3+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_3
+    OAM_WRITE_Y_A PLAYER_3A
 
-    OAM_WRITE_TILE PLAYER_3, #3
+    OAM_WRITE_TILE PLAYER_3A, #3
 
-    OAM_WRITE_ATTRUDE PLAYER_3, %10000000
+    OAM_WRITE_ATTRIBUTE PLAYER_3A, %10000000
 
     rts
 
@@ -452,7 +424,7 @@ PLAYER_4D = 15
     NOT_GAMEPAD_A:
 
     lda player3+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_3
+    OAM_WRITE_X_A PLAYER_3A
 
     lda #$03
     cmp player3+PlayerStruct::gravity
@@ -482,7 +454,7 @@ PLAYER_4D = 15
     sec
     adc player3+PlayerStruct::gravity ;gravity 
     sta player3+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_3
+    OAM_WRITE_Y_A PLAYER_3A
 
     rts
 .endproc
@@ -496,14 +468,14 @@ PLAYER_4D = 15
     sta player4+PlayerStruct::ypos
 
     lda player4+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_4
+    OAM_WRITE_X_A PLAYER_4A
 
     lda player4+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_4
+    OAM_WRITE_Y_A PLAYER_4A
 
-    OAM_WRITE_TILE PLAYER_4, #4
+    OAM_WRITE_TILE PLAYER_4A, #4
 
-    OAM_WRITE_ATTRUDE PLAYER_4, %10000000
+    OAM_WRITE_ATTRIBUTE PLAYER_4A, %10000000
 
     rts
 
@@ -594,7 +566,7 @@ PLAYER_4D = 15
     NOT_GAMEPAD_A:
 
     lda player4+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_4
+    OAM_WRITE_X_A PLAYER_4A
 
     lda #$03
     cmp player4+PlayerStruct::gravity
@@ -624,7 +596,7 @@ PLAYER_4D = 15
     sec
     adc player4+PlayerStruct::gravity ;gravity 
     sta player4+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_4
+    OAM_WRITE_Y_A PLAYER_4A
 
     rts
 .endproc

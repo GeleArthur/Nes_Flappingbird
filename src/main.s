@@ -31,9 +31,9 @@
     OAM_WRITE_TILE 0, #1
 
     jsr SetupPlayer1
-    ; jsr SetupPlayer2
-    ; jsr SetupPlayer3
-    ; jsr SetupPlayer4
+    jsr SetupPlayer2
+    jsr SetupPlayer3
+    jsr SetupPlayer4
 
     jsr SetupBackground
 
@@ -55,9 +55,9 @@
     jsr GamepadPoll
 
     jsr UpdatePlayer1
-    ; jsr UpdatePlayer2
-    ; jsr UpdatePlayer3
-    ; jsr UpdatePlayer4
+    jsr UpdatePlayer2
+    jsr UpdatePlayer3
+    jsr UpdatePlayer4
 
     jsr CollisionPlayer1
     jsr ScrollBackground
