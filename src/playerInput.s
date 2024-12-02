@@ -31,9 +31,24 @@ p_h_j_b:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bi
 .segment "CODE"
 
 PLAYER_1 = 0
-PLAYER_2 = 1
-PLAYER_3 = 2
-PLAYER_4 = 3
+PLAYER_1B = 4
+PLAYER_1C = 5
+PLAYER_1D = 6
+
+PLAYER_2 = 4
+PLAYER_2B = 5
+PLAYER_2C = 6
+PLAYER_2D = 7
+
+PLAYER_3 = 8
+PLAYER_3B = 9
+PLAYER_3C = 10
+PLAYER_3D = 11
+
+PLAYER_4 = 12
+PLAYER_4B = 13
+PLAYER_4C = 14
+PLAYER_4D = 15
 
 .proc SetupPlayer1
     lda #180
@@ -47,11 +62,24 @@ PLAYER_4 = 3
 
     lda p1_x
     OAM_WRITE_X_A PLAYER_1
+    OAM_WRITE_X_A PLAYER_1C 
+    sec 
+    adc #7
+    OAM_WRITE_X_A PLAYER_1B
+    OAM_WRITE_X_A PLAYER_1D 
+
 
     lda p1_y
     OAM_WRITE_Y_A PLAYER_1
+    OAM_WRITE_Y_A PLAYER_1B
+    OAM_WRITE_Y_A PLAYER_1C
+    OAM_WRITE_Y_A PLAYER_1D
+
 
     OAM_WRITE_TILE PLAYER_1, #1
+    OAM_WRITE_TILE PLAYER_1B, #2
+    OAM_WRITE_TILE PLAYER_1C, #3
+    OAM_WRITE_TILE PLAYER_1D, #4
 
     OAM_WRITE_ATTRUDE PLAYER_1, %10000000
 
@@ -134,7 +162,7 @@ PLAYER_4 = 3
             beq NOT_GAMEPAD_A 
             lda p1_y
             sec
-            sbc #$07   ;determines the intesity of elevation
+            sbc #$06   ;determines the intesity of elevation
             sta p1_y   
             inc p1_j_c
             ;resets gravity acceleration
@@ -161,10 +189,6 @@ PLAYER_4 = 3
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda #$00 ;time it takes to reset counter
-    cmp p1_g ;compare it
-    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
-    ;if it does equal the time to reset counter than reset values to 0
     lda p_h_j_b
     and #%00000001  ;checks for that players bit
     cmp #$0
@@ -179,6 +203,12 @@ PLAYER_4 = 3
     adc p1_g ;gravity 
     sta p1_y
     OAM_WRITE_Y_A PLAYER_1
+    OAM_WRITE_Y_A PLAYER_1B
+    sec 
+    adc #7
+    OAM_WRITE_Y_A PLAYER_1C
+    OAM_WRITE_Y_A PLAYER_1D
+
 
     rts
 .endproc
@@ -280,7 +310,7 @@ PLAYER_4 = 3
             beq NOT_GAMEPAD_A 
             lda p2_y
             sec
-            sbc #$07   ;determines the intesity of elevation
+            sbc #$06   ;determines the intesity of elevation
             sta p2_y   
             inc p2_j_c
             ;resets gravity acceleration
@@ -306,11 +336,7 @@ PLAYER_4 = 3
     sta p2_g_c
 
     BRANCH_ON_TERMINAL_VELOCITY:
-    
-    lda #$00 ;time it takes to reset counter
-    cmp p2_g ;compare it
-    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
-    ;if it does equal the time to reset counter than reset values to 0
+
     lda p_h_j_b
     and #%00000010  ;checks for that players bit
     cmp #$0
@@ -426,7 +452,7 @@ PLAYER_4 = 3
             beq NOT_GAMEPAD_A 
             lda p3_y
             sec
-            sbc #$07   ;determines the intesity of elevation
+            sbc #$06   ;determines the intesity of elevation
             sta p3_y   
             inc p3_j_c
             ;resets gravity acceleration
@@ -453,10 +479,6 @@ PLAYER_4 = 3
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda #$00 ;time it takes to reset counter
-    cmp p3_g ;compare it
-    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
-    ;if it does equal the time to reset counter than reset values to 0
     lda p_h_j_b
     and #%00000100  ;checks for that players bit
     cmp #$0
@@ -572,7 +594,7 @@ PLAYER_4 = 3
             beq NOT_GAMEPAD_A 
             lda p4_y
             sec
-            sbc #$07   ;determines the intesity of elevation
+            sbc #$06   ;determines the intesity of elevation
             sta p4_y   
             inc p4_j_c
             ;resets gravity acceleration
@@ -599,10 +621,6 @@ PLAYER_4 = 3
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda #$00 ;time it takes to reset counter
-    cmp p4_g ;compare it
-    bpl SET_PLAYER_Y ;If p1_j_c_r != reset time  jump to set_player_y
-    ;if it does equal the time to reset counter than reset values to 0
     lda p_h_j_b
     and #%00001000  ;checks for that players bit
     cmp #$0
