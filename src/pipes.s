@@ -4,10 +4,10 @@ pipeBottomHighToLow: .res 1
 
 .segment "RODATA"
 pipe_data: ; The bird needs to be between these 2
-.byte 5*8, 112
-.byte 9*8, 144
-.byte 5*8, 112
-.byte 9*7, 144
+.byte 5*8, 13*8
+.byte 9*8, 17*8
+.byte 5*8, 13*8
+.byte 9*8, 17*8
 
 
 
@@ -21,7 +21,7 @@ pipe_data: ; The bird needs to be between these 2
     adc player1+PlayerStruct::xpos
     and #%00100000
     beq end
-
+    
     lda scroll_pos
     adc player1+PlayerStruct::xpos
 
@@ -33,6 +33,7 @@ pipe_data: ; The bird needs to be between these 2
     lsr ; Divide by 64
     asl ; stride * 2
     tax ; Put in x
+
 
     lda pipe_data, x
     cmp player1+PlayerStruct::ypos

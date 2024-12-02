@@ -48,21 +48,6 @@ PLAYER_4D = 15
     lda #$00
     sta player1+PlayerStruct::jumpCounter
 
-    lda player1+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_1A
-    OAM_WRITE_X_A PLAYER_1C 
-    sec 
-    adc #7
-    OAM_WRITE_X_A PLAYER_1B
-    OAM_WRITE_X_A PLAYER_1D 
-
-
-    ; lda player1+PlayerStruct::ypos
-    ; OAM_WRITE_Y_A PLAYER_1A
-    ; OAM_WRITE_Y_A PLAYER_1B
-    ; OAM_WRITE_Y_A PLAYER_1C
-    ; OAM_WRITE_Y_A PLAYER_1D
-
 
     OAM_WRITE_TILE PLAYER_1A, #1
     OAM_WRITE_TILE PLAYER_1B, #2
@@ -170,6 +155,14 @@ PLAYER_4D = 15
     adc #7
     OAM_WRITE_Y_A PLAYER_1C
     OAM_WRITE_Y_A PLAYER_1D
+
+    lda player1+PlayerStruct::xpos
+    OAM_WRITE_X_A PLAYER_1A
+    OAM_WRITE_X_A PLAYER_1C 
+    sec 
+    adc #7
+    OAM_WRITE_X_A PLAYER_1B
+    OAM_WRITE_X_A PLAYER_1D 
 
 
     rts
