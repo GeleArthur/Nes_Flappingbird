@@ -30,14 +30,6 @@
     OAM_WRITE_Y 0, #100
     OAM_WRITE_TILE 0, #1
 
-    lda #180
-    sta p1_x
-
-    lda #120
-    sta p1_y
-
-    
-
     jsr SetupPlayer1
     ; jsr SetupPlayer2
     ; jsr SetupPlayer3

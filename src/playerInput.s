@@ -1,31 +1,21 @@
+.struct PlayerStruct
+    xpos .byte
+    ypos .byte
+    gravity .byte
+    gravityCounter .byte
+    jumpCounter .byte
+.endstruct
+
 .segment "ZEROPAGE"
 					   ;        2 to turn rendering off next NMI
+player1: .res .sizeof(PlayerStruct)
+player2: .res .sizeof(PlayerStruct)
+player3: .res .sizeof(PlayerStruct)
+player4: .res .sizeof(PlayerStruct)
 
-p1_x:   .res 1 ; Player 1 x position
-p1_y:   .res 1 ; Player 1 y position
-p1_g:   .res 1 ; Player 1 gravity acceleration
-p1_g_c: .res 1 ; Player 1 Gravity Counter
-p1_j_c: .res 1 ; Player 1 Jump Counter            //stores the last y position of the player to allow to keep track of when the player can jump
-
-p2_x:   .res 1 ; Player 2 x position
-p2_y:   .res 1 ; Player 2 y position
-p2_g:   .res 1 ; Player 2 gravity acceleration
-p2_g_c: .res 1 ; Player 2 Gravity Counter
-p2_j_c: .res 1 ; Player 2 Jump Counter   
-
-p3_x:   .res 1 ; Player 3 x position
-p3_y:   .res 1 ; Player 3 y position
-p3_g:   .res 1 ; Player 3 gravity acceleration
-p3_g_c: .res 1 ; Player 3 Gravity Counter
-p3_j_c: .res 1 ; Player 3 Jump Counter  
-
-p4_x:   .res 1 ; Player 4 x position
-p4_y:   .res 1 ; Player 4 y position
-p4_g:   .res 1 ; Player 4 gravity acceleration
-p4_g_c: .res 1 ; Player 4 Gravity Counter
-p4_j_c: .res 1 ; Player 4 Jump Counter  
-
+; Arthur: Use the other 4 to see if they are dead?
 p_h_j_b:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
+
 
 
 .segment "CODE"
@@ -52,15 +42,15 @@ PLAYER_4D = 15
 
 .proc SetupPlayer1
     lda #180
-    sta p1_x
+    sta player1+PlayerStruct::xpos
 
     lda #120
-    sta p1_y
+    sta player1+PlayerStruct::ypos
 
     lda #$00
-    sta p1_j_c
+    sta player1+PlayerStruct::jumpCounter
 
-    lda p1_x
+    lda player1+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_1
     OAM_WRITE_X_A PLAYER_1C 
     sec 
@@ -69,7 +59,7 @@ PLAYER_4D = 15
     OAM_WRITE_X_A PLAYER_1D 
 
 
-    lda p1_y
+    lda player1+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_1
     OAM_WRITE_Y_A PLAYER_1B
     OAM_WRITE_Y_A PLAYER_1C
@@ -94,12 +84,12 @@ PLAYER_4D = 15
 
     beq NOT_GAMEPAD_LEFT
         ; GOING LEFT
-        lda p1_x
+        lda player1+PlayerStruct::xpos
         cmp #0
         beq NOT_GAMEPAD_LEFT
         sec
         sbc #1
-        sta p1_x
+        sta player1+PlayerStruct::xpos
     
     NOT_GAMEPAD_LEFT:
 
@@ -108,12 +98,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_RIGHT
         ; GOING RIGHT
-            lda p1_x
+            lda player1+PlayerStruct::xpos
             cmp #248
             beq NOT_GAMEPAD_RIGHT ; FREE OVERFLOW
             clc
             adc #1
-            sta p1_x
+            sta player1+PlayerStruct::xpos
 
     NOT_GAMEPAD_RIGHT:
         lda gamepad_1
@@ -121,12 +111,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_UP
             ; GOING UP
-            lda p1_y
+            lda player1+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_UP
             sec
             sbc #1
-            sta p1_y
+            sta player1+PlayerStruct::ypos
 
     NOT_GAMEPAD_UP:
         lda gamepad_1
@@ -134,12 +124,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_DOWN
             ; GOING DOWN
-            lda p1_y
+            lda player1+PlayerStruct::ypos
             cmp #230
             beq NOT_GAMEPAD_DOWN
             clc
             adc #1
-            sta p1_y
+            sta player1+PlayerStruct::ypos
 
     NOT_GAMEPAD_DOWN:
         lda #%00001110
@@ -151,41 +141,41 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_A
             ;jumping
-            lda p1_y
+            lda player1+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00000001
             ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
             sta p_h_j_b 
-            lda #$08   ;max value of p1_j_c ;determines how long the player can hold A for and keep going up
-            cmp p1_j_c      ;compares the J counter with its max value
+            lda #$08   ;max value of player1+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
+            cmp player1+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
-            lda p1_y
+            lda player1+PlayerStruct::ypos
             sec
             sbc #$06   ;determines the intesity of elevation
-            sta p1_y   
-            inc p1_j_c
+            sta player1+PlayerStruct::ypos   
+            inc player1+PlayerStruct::jumpCounter
             ;resets gravity acceleration
             lda #$0
-            sta p1_g
+            sta player1+PlayerStruct::gravity
 
     NOT_GAMEPAD_A:
 
-    lda p1_x
+    lda player1+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_1
 
     lda #$03
-    cmp p1_g
+    cmp player1+PlayerStruct::gravity
     beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
 
-    inc p1_g_c
+    inc player1+PlayerStruct::gravityCounter
     lda #$15  ;value for the counter to reach
-    cmp p1_g_c ;check if the player gravity counter is $15
+    cmp player1+PlayerStruct::gravityCounter ;check if the player gravity counter is $15
 
     bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
-    inc p1_g
+    inc player1+PlayerStruct::gravity
     lda #$0
-    sta p1_g_c
+    sta player1+PlayerStruct::gravityCounter
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
@@ -195,13 +185,13 @@ PLAYER_4D = 15
     bne SET_PLAYER_Y
     ;if the jump button isnt being held down than resets counter
     lda #$0
-    sta p1_j_c
+    sta player1+PlayerStruct::jumpCounter
 
     SET_PLAYER_Y:
-    lda p1_y
+    lda player1+PlayerStruct::ypos
     sec
-    adc p1_g ;gravity 
-    sta p1_y
+    adc player1+PlayerStruct::gravity ;gravity 
+    sta player1+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_1
     OAM_WRITE_Y_A PLAYER_1B
     sec 
@@ -215,16 +205,16 @@ PLAYER_4D = 15
 
 .proc SetupPlayer2
     lda #180 + 8
-    sta p2_x
+    sta player2+PlayerStruct::xpos
 
     lda #120
-    sta p2_y
+    sta player2+PlayerStruct::ypos
 
 
-    lda p2_x
+    lda player2+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_2
 
-    lda p2_y
+    lda player2+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_2
 
     OAM_WRITE_TILE PLAYER_2, #2
@@ -242,12 +232,12 @@ PLAYER_4D = 15
 
     beq NOT_GAMEPAD_LEFT
         ; GOING LEFT
-        lda p2_x
+        lda player2+PlayerStruct::xpos
         cmp #0
         beq NOT_GAMEPAD_LEFT
         sec
         sbc #1
-        sta p2_x
+        sta player2+PlayerStruct::xpos
     
     NOT_GAMEPAD_LEFT:
 
@@ -256,12 +246,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_RIGHT
         ; GOING RIGHT
-            lda p2_x
+            lda player2+PlayerStruct::xpos
             cmp #248
             beq NOT_GAMEPAD_RIGHT ; FREE OVERFLOW
             clc
             adc #1
-            sta p2_x
+            sta player2+PlayerStruct::xpos
 
     NOT_GAMEPAD_RIGHT:
         lda gamepad_2
@@ -269,12 +259,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_UP
             ; GOING UP
-            lda p2_y
+            lda player2+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_UP
             sec
             sbc #1
-            sta p2_y
+            sta player2+PlayerStruct::ypos
 
     NOT_GAMEPAD_UP:
         lda gamepad_2
@@ -282,12 +272,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_DOWN
             ; GOING DOWN
-            lda p2_y
+            lda player2+PlayerStruct::ypos
             cmp #230
             beq NOT_GAMEPAD_DOWN
             clc
             adc #1
-            sta p2_y
+            sta player2+PlayerStruct::ypos
 
     NOT_GAMEPAD_DOWN:
         lda #%00001101
@@ -299,41 +289,41 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_A
             ;jumping
-            lda p2_y
+            lda player2+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00000010
             ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
             sta p_h_j_b 
-            lda #$08   ;max value of p2_j_c ;determines how long the player can hold A for and keep going up
-            cmp p2_j_c      ;compares the J counter with its max value
+            lda #$08   ;max value of player2+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
+            cmp player2+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
-            lda p2_y
+            lda player2+PlayerStruct::ypos
             sec
             sbc #$06   ;determines the intesity of elevation
-            sta p2_y   
-            inc p2_j_c
+            sta player2+PlayerStruct::ypos   
+            inc player2+PlayerStruct::jumpCounter
             ;resets gravity acceleration
             lda #$0
-            sta p2_g
+            sta player2+PlayerStruct::gravity
 
     NOT_GAMEPAD_A:
 
-    lda p2_x
+    lda player2+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_2
 
     lda #$03
-    cmp p2_g
+    cmp player2+PlayerStruct::gravity
     beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
 
-    inc p2_g_c
+    inc player2+PlayerStruct::gravityCounter
     lda #$15  ;value for the counter to reach
-    cmp p2_g_c ;check if the player gravity counter is $FF
+    cmp player2+PlayerStruct::gravityCounter ;check if the player gravity counter is $FF
 
     bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
-    inc p2_g
+    inc player2+PlayerStruct::gravity
     lda #$0
-    sta p2_g_c
+    sta player2+PlayerStruct::gravityCounter
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
@@ -343,13 +333,13 @@ PLAYER_4D = 15
     bne SET_PLAYER_Y
     ;if the jump button isnt being held down than resets counter
     lda #$0
-    sta p2_j_c
+    sta player2+PlayerStruct::jumpCounter
 
     SET_PLAYER_Y:
-    lda p2_y
+    lda player2+PlayerStruct::ypos
     sec
-    adc p2_g ;gravity 
-    sta p2_y
+    adc player2+PlayerStruct::gravity ;gravity 
+    sta player2+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_2
 
     rts
@@ -357,16 +347,16 @@ PLAYER_4D = 15
 
 .proc SetupPlayer3
     lda #180
-    sta p3_x
+    sta player3+PlayerStruct::xpos
 
     lda #120 + 8
-    sta p3_y
+    sta player3+PlayerStruct::ypos
 
 
-    lda p3_x
+    lda player3+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_3
 
-    lda p3_y
+    lda player3+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_3
 
     OAM_WRITE_TILE PLAYER_3, #3
@@ -384,12 +374,12 @@ PLAYER_4D = 15
 
     beq NOT_GAMEPAD_LEFT
         ; GOING LEFT
-        lda p3_x
+        lda player3+PlayerStruct::xpos
         cmp #0
         beq NOT_GAMEPAD_LEFT
         sec
         sbc #1
-        sta p3_x
+        sta player3+PlayerStruct::xpos
     
     NOT_GAMEPAD_LEFT:
 
@@ -398,12 +388,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_RIGHT
         ; GOING RIGHT
-            lda p3_x
+            lda player3+PlayerStruct::xpos
             cmp #248
             beq NOT_GAMEPAD_RIGHT ; FREE OVERFLOW
             clc
             adc #1
-            sta p3_x
+            sta player3+PlayerStruct::xpos
 
     NOT_GAMEPAD_RIGHT:
         lda gamepad_3
@@ -411,12 +401,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_UP
             ; GOING UP
-            lda p3_y
+            lda player3+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_UP
             sec
             sbc #1
-            sta p3_y
+            sta player3+PlayerStruct::ypos
 
     NOT_GAMEPAD_UP:
         lda gamepad_3
@@ -424,12 +414,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_DOWN
             ; GOING DOWN
-            lda p3_y
+            lda player3+PlayerStruct::ypos
             cmp #230
             beq NOT_GAMEPAD_DOWN
             clc
             adc #1
-            sta p3_y
+            sta player3+PlayerStruct::ypos
 
     NOT_GAMEPAD_DOWN:
         lda #%00001011
@@ -441,41 +431,41 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_A
             ;jumping
-            lda p3_y
+            lda player3+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00000100
             ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
             sta p_h_j_b 
-            lda #$08   ;max value of p3_j_c ;determines how long the player can hold A for and keep going up
-            cmp p3_j_c      ;compares the J counter with its max value
+            lda #$08   ;max value of player3+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
+            cmp player3+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
-            lda p3_y
+            lda player3+PlayerStruct::ypos
             sec
             sbc #$06   ;determines the intesity of elevation
-            sta p3_y   
-            inc p3_j_c
+            sta player3+PlayerStruct::ypos   
+            inc player3+PlayerStruct::jumpCounter
             ;resets gravity acceleration
             lda #$0
-            sta p3_g
+            sta player3+PlayerStruct::gravity
 
     NOT_GAMEPAD_A:
 
-    lda p3_x
+    lda player3+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_3
 
     lda #$03
-    cmp p3_g
+    cmp player3+PlayerStruct::gravity
     beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
 
-    inc p3_g_c
+    inc player3+PlayerStruct::gravityCounter
     lda #$15  ;value for the counter to reach
-    cmp p3_g_c ;check if the player gravity counter is $FF
+    cmp player3+PlayerStruct::gravityCounter ;check if the player gravity counter is $FF
 
     bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
-    inc p3_g
+    inc player3+PlayerStruct::gravity
     lda #$0
-    sta p3_g_c
+    sta player3+PlayerStruct::gravityCounter
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
@@ -485,13 +475,13 @@ PLAYER_4D = 15
     bne SET_PLAYER_Y
     ;if the jump button isnt being held down than resets counter
     lda #$0
-    sta p3_j_c
+    sta player3+PlayerStruct::jumpCounter
 
     SET_PLAYER_Y:
-    lda p3_y
+    lda player3+PlayerStruct::ypos
     sec
-    adc p3_g ;gravity 
-    sta p3_y
+    adc player3+PlayerStruct::gravity ;gravity 
+    sta player3+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_3
 
     rts
@@ -500,15 +490,15 @@ PLAYER_4D = 15
 .proc SetupPlayer4
 
     lda #180 + 8
-    sta p4_x
+    sta player4+PlayerStruct::xpos
 
     lda #120 + 8
-    sta p4_y
+    sta player4+PlayerStruct::ypos
 
-    lda p4_x
+    lda player4+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_4
 
-    lda p4_y
+    lda player4+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_4
 
     OAM_WRITE_TILE PLAYER_4, #4
@@ -526,12 +516,12 @@ PLAYER_4D = 15
 
     beq NOT_GAMEPAD_LEFT
         ; GOING LEFT
-        lda p4_x
+        lda player4+PlayerStruct::xpos
         cmp #0
         beq NOT_GAMEPAD_LEFT
         sec
         sbc #1
-        sta p4_x
+        sta player4+PlayerStruct::xpos
     
     NOT_GAMEPAD_LEFT:
 
@@ -540,12 +530,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_RIGHT
         ; GOING RIGHT
-            lda p4_x
+            lda player4+PlayerStruct::xpos
             cmp #248
             beq NOT_GAMEPAD_RIGHT ; FREE OVERFLOW
             clc
             adc #1
-            sta p4_x
+            sta player4+PlayerStruct::xpos
 
     NOT_GAMEPAD_RIGHT:
         lda gamepad_4
@@ -553,12 +543,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_UP
             ; GOING UP
-            lda p4_y
+            lda player4+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_UP
             sec
             sbc #1
-            sta p4_y
+            sta player4+PlayerStruct::ypos
 
     NOT_GAMEPAD_UP:
         lda gamepad_4
@@ -566,12 +556,12 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_DOWN
             ; GOING DOWN
-            lda p4_y
+            lda player4+PlayerStruct::ypos
             cmp #230
             beq NOT_GAMEPAD_DOWN
             clc
             adc #1
-            sta p4_y
+            sta player4+PlayerStruct::ypos
 
     NOT_GAMEPAD_DOWN:
         lda #%00000111
@@ -583,41 +573,41 @@ PLAYER_4D = 15
 
         beq NOT_GAMEPAD_A
             ;jumping
-            lda p4_y
+            lda player4+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00001000
             ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
             sta p_h_j_b 
-            lda #$08   ;max value of p2_j_c ;determines how long the player can hold A for and keep going up
-            cmp p4_j_c      ;compares the J counter with its max value
+            lda #$08   ;max value of player2+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
+            cmp player4+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
-            lda p4_y
+            lda player4+PlayerStruct::ypos
             sec
             sbc #$06   ;determines the intesity of elevation
-            sta p4_y   
-            inc p4_j_c
+            sta player4+PlayerStruct::ypos   
+            inc player4+PlayerStruct::jumpCounter
             ;resets gravity acceleration
             lda #$0
-            sta p4_g
+            sta player4+PlayerStruct::gravity
 
     NOT_GAMEPAD_A:
 
-    lda p4_x
+    lda player4+PlayerStruct::xpos
     OAM_WRITE_X_A PLAYER_4
 
     lda #$03
-    cmp p4_g
+    cmp player4+PlayerStruct::gravity
     beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
 
-    inc p4_g_c
+    inc player4+PlayerStruct::gravityCounter
     lda #$15  ;value for the counter to reach
-    cmp p4_g_c ;check if the player gravity counter is $FF
+    cmp player4+PlayerStruct::gravityCounter ;check if the player gravity counter is $FF
 
     bne  BRANCH_ON_TERMINAL_VELOCITY ;Branches if the counter isnt equal to the A defined above
-    inc p4_g
+    inc player4+PlayerStruct::gravity
     lda #$0
-    sta p4_g_c
+    sta player4+PlayerStruct::gravityCounter
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
@@ -627,13 +617,13 @@ PLAYER_4D = 15
     bne SET_PLAYER_Y
     ;if the jump button isnt being held down than resets counter
     lda #$0
-    sta p4_j_c
+    sta player4+PlayerStruct::jumpCounter
 
     SET_PLAYER_Y:
-    lda p4_y
+    lda player4+PlayerStruct::ypos
     sec
-    adc p4_g ;gravity 
-    sta p4_y
+    adc player4+PlayerStruct::gravity ;gravity 
+    sta player4+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_4
 
     rts

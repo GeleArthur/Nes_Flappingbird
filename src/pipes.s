@@ -18,12 +18,12 @@ pipe_data: ; The bird needs to be between these 2
     OAM_WRITE_TILE 3, #2
 
     lda scroll_pos
-    adc p1_x
+    adc player1+PlayerStruct::xpos
     and #%00100000
     beq end
 
     lda scroll_pos
-    adc p1_x
+    adc player1+PlayerStruct::xpos
 
     lsr 
     lsr 
@@ -35,11 +35,11 @@ pipe_data: ; The bird needs to be between these 2
     tax ; Put in x
 
     lda pipe_data, x
-    cmp p1_y
+    cmp player1+PlayerStruct::ypos
     bpl collided
 
     lda pipe_data+1, x
-    cmp p1_y
+    cmp player1+PlayerStruct::ypos
     bmi collided
 
     jmp end
@@ -47,7 +47,7 @@ pipe_data: ; The bird needs to be between these 2
 
 collided:
     OAM_WRITE_X 3, #100
-    OAM_WRITE_Y 3, p1_y
+    OAM_WRITE_Y 3, player1+PlayerStruct::ypos
     OAM_WRITE_TILE 3, #2
 
 
