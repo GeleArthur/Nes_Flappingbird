@@ -58,6 +58,23 @@
     OAM_WRITE_X_A (playerOAM+3)
 .endmacro
 
+.macro SET_PLAYER_POSITION playerX,playerY,player,playerOAM
+    lda playerY
+    sta player+PlayerStruct::ypos
+    OAM_WRITE_Y_A playerOAM
+    OAM_WRITE_Y_A (playerOAM+1)
+    OAM_WRITE_Y_A (playerOAM+2)
+    OAM_WRITE_Y_A (playerOAM+3)
+
+    lda playerX
+    sta player+PlayerStruct::xpos
+    OAM_WRITE_X_A playerOAM
+    OAM_WRITE_X_A (playerOAM+2) 
+
+    OAM_WRITE_X_A (playerOAM+1)
+    OAM_WRITE_X_A (playerOAM+3)
+.endmacro
+
 .macro UPDATE_PLAYER player, playerOAM, gamepad, plyrBitMask
     lda gamepad
     and #PAD_L 
@@ -183,6 +200,79 @@ PLAYER_4D = 15
 
     rts
 
+.endproc
+
+.proc HandlePlayer1
+    lda playerDeathStates
+    and #%00000001
+    beq :+
+    jsr UpdatePlayer1
+    jmp :++
+    :
+    jsr UpdatePlayer1Death
+    :
+    rts
+.endproc
+
+.proc HandlePlayer2
+    lda playerDeathStates
+    and #%00000010
+    beq :+
+    jsr UpdatePlayer2
+    jmp :++
+    :
+    jsr UpdatePlayer2Death
+    :
+    rts
+.endproc
+
+.proc HandlePlayer3
+    lda playerDeathStates
+    and #%00000100
+    beq :+
+    jsr UpdatePlayer3
+    jmp :++
+    :
+    jsr UpdatePlayer3Death
+    :
+    rts
+.endproc
+
+.proc HandlePlayer4
+    lda playerDeathStates
+    and #%00001000
+    beq :+
+    jsr UpdatePlayer4
+    jmp :++
+    :
+    jsr UpdatePlayer4Death
+    :
+    rts
+.endproc
+
+; ALL BUGGED TO BE FIXED By NEXT GONCALO PATCH
+.proc UpdatePlayer1Death
+    ; Set all player sprites (of this player) to the end of the screen.
+        SET_PLAYER_POSITION #255,#255,player1,PLAYER_1A
+        rts
+.endproc
+
+.proc UpdatePlayer2Death
+    ; Set all player sprites (of this player) to the end of the screen.
+        SET_PLAYER_POSITION #255,#240,player2,PLAYER_2A
+        rts
+.endproc
+
+.proc UpdatePlayer3Death
+    ; Set all player sprites (of this player) to the end of the screen.
+        SET_PLAYER_POSITION #255,#240,player3,PLAYER_3A
+        rts
+.endproc
+
+.proc UpdatePlayer4Death
+    ; Set all player sprites (of this player) to the end of the screen.
+        SET_PLAYER_POSITION #255,#240,player4,PLAYER_4A
+        rts
 .endproc
 
 .proc UpdatePlayer1
