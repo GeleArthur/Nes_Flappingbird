@@ -19,17 +19,17 @@
 .include "startScreen.s"
 .include "pauseGame.s"
 
+.include "audio.s"
+
+
 
 .segment "CODE"
+
+
 .proc reset
     NES_INIT ; Setup nes
     
     jsr StartScreen
-
-    ; INIT GAME CODE
-    OAM_WRITE_X 0, #100
-    OAM_WRITE_Y 0, #100
-    OAM_WRITE_TILE 0, #1
 
     ; Setup player lives
     lda #%00001111
@@ -41,6 +41,9 @@
     jsr SetupPlayer4
 
     jsr SetupBackground
+    
+    jsr audio_init
+    jsr audio_title_screen
 
     lda #CTRL_NMI
     sta PPU_CTRL ; Enable NMI.
@@ -65,10 +68,14 @@
     jsr HandlePlayer4
 
     jsr CollisionPlayer1
+    jsr CollisionPlayer2
+    jsr CollisionPlayer3
+    jsr CollisionPlayer4
     jsr ScrollBackground
 
     jsr PauseGameCheck
     jsr EndOfGame
+    jsr famistudio_update
 
 
     WAIT_UNITL_FRAME_HAS_RENDERED

@@ -70,6 +70,6 @@
    sta oam + (index * 4) + 2
 .endmacro
 
-.macro OAM_WRITE_ATTRUDE_A index
+.macro OAM_WRITE_ATTRIBUTE_A index
    sta oam + (index * 4) + 2
 .endmacro
