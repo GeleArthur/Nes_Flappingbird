@@ -13,7 +13,7 @@
 .include "controllers.s"
 .include "../assets/nametable01.s"
 .include "background.s"
-.include "playerInput.s"
+.include "playerController.s"
 .include "pipes.s"
 .include "startScreen.s"
 .include "pauseGame.s"

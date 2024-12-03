@@ -15,30 +15,16 @@ pipe_data: ; The bird needs to be between these 2
 .proc CollisionPlayer1
     OAM_WRITE_X 32, #100
     OAM_WRITE_Y 32, #255
-    OAM_WRITE_TILE 32, #2
+    OAM_WRITE_TILE 32, #2    
 
     lda scroll_pos
     adc player1+PlayerStruct::xpos
-
-    lsr 
-    lsr 
-    lsr 
-    lsr 
-    lsr 
-    lsr ; Divide by 64
-    asl ; stride * 2
-    tax ; Put in x
-    tay ; Put in y
-    
-    lda scroll_pos
-    adc player1+PlayerStruct::xpos
-
-    
-
-
+    and #%00100000
+    beq end
 
     lda scroll_pos
     adc player1+PlayerStruct::xpos
+    adc #16
     and #%00100000
     beq end
     
@@ -53,7 +39,6 @@ pipe_data: ; The bird needs to be between these 2
     lsr ; Divide by 64
     asl ; stride * 2
     tax ; Put in x
-
 
     lda pipe_data, x
     cmp player1+PlayerStruct::ypos
