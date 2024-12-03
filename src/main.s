@@ -30,11 +30,6 @@
     
     jsr StartScreen
 
-    ; INIT GAME CODE
-    OAM_WRITE_X 0, #100
-    OAM_WRITE_Y 0, #100
-    OAM_WRITE_TILE 0, #1
-
     jsr SetupPlayer1
     jsr SetupPlayer2
     jsr SetupPlayer3
