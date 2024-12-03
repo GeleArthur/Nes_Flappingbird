@@ -46,7 +46,7 @@ LoadAttributeLoop:
 .endproc
 
 .proc ScrollBackground
-  inc scroll_pos
+  ; inc scroll_pos
   lda scroll_pos
   sta PPU_SCROLL
   lda #0

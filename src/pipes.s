@@ -19,6 +19,26 @@ pipe_data: ; The bird needs to be between these 2
 
     lda scroll_pos
     adc player1+PlayerStruct::xpos
+
+    lsr 
+    lsr 
+    lsr 
+    lsr 
+    lsr 
+    lsr ; Divide by 64
+    asl ; stride * 2
+    tax ; Put in x
+    tay ; Put in y
+    
+    lda scroll_pos
+    adc player1+PlayerStruct::xpos
+
+    
+
+
+
+    lda scroll_pos
+    adc player1+PlayerStruct::xpos
     and #%00100000
     beq end
     

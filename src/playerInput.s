@@ -147,7 +147,7 @@ PLAYER_4D = 15
     SET_PLAYER_Y:
     lda player1+PlayerStruct::ypos
     sec
-    adc player1+PlayerStruct::gravity ;gravity 
+    ; adc player1+PlayerStruct::gravity ;gravity 
     sta player1+PlayerStruct::ypos
     OAM_WRITE_Y_A PLAYER_1A
     OAM_WRITE_Y_A PLAYER_1B
