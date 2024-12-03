@@ -15,8 +15,18 @@
     lda #CTRL_NMI | CTRL_SPR_1000
     sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
 
+    jsr audio_init
+    jsr audio_title_screen
+
+
 @StayInStartScreen:
+    jsr famistudio_update
     jsr GamepadPoll
+
+    inc nmi_ready
+    @waitVBlank2:
+        lda nmi_ready
+    bne @waitVBlank2 ; If nmi_ready == 1 -> wait    
 
     lda gamepad_1
     and #%00010000

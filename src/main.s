@@ -39,8 +39,7 @@
 
     jsr SetupBackground
     
-    jsr audio_init
-    jsr audio_title_screen
+    jsr audio_main_game
 
     lda #CTRL_NMI
     sta PPU_CTRL ; Enable NMI.
