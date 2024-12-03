@@ -6,6 +6,47 @@
     jumpCounter .byte
 .endstruct
 
+.macro  SETUP_PLAYER   player, playerOAM 
+
+   lda #180
+   sta player+PlayerStruct::xpos
+
+   lda #120
+   sta player+PlayerStruct::ypos
+
+   lda #$00
+   sta player+PlayerStruct::jumpCounter
+
+
+   OAM_WRITE_TILE playerOAM, #1
+   OAM_WRITE_TILE (playerOAM+1), #2
+   OAM_WRITE_TILE (playerOAM+2), #3
+   OAM_WRITE_TILE (playerOAM+3), #4
+
+   OAM_WRITE_ATTRIBUTE playerOAM, %10000000
+.endmacro
+
+.macro SET_XY  player, playerOAM
+    lda player+PlayerStruct::ypos
+    sec
+    adc player+PlayerStruct::gravity ;gravity 
+    sta player+PlayerStruct::ypos
+    OAM_WRITE_Y_A playerOAM
+    OAM_WRITE_Y_A (playerOAM+1)
+    sec 
+    adc #7
+    OAM_WRITE_Y_A (playerOAM+2)
+    OAM_WRITE_Y_A (playerOAM+3)
+
+    lda player+PlayerStruct::xpos
+    OAM_WRITE_X_A playerOAM
+    OAM_WRITE_X_A (playerOAM+2) 
+    sec 
+    adc #7
+    OAM_WRITE_X_A (playerOAM+1)
+    OAM_WRITE_X_A (playerOAM+3)
+.endmacro
+
 .segment "ZEROPAGE"
 					   ;        2 to turn rendering off next NMI
 player1: .res .sizeof(PlayerStruct)
@@ -14,7 +55,7 @@ player3: .res .sizeof(PlayerStruct)
 player4: .res .sizeof(PlayerStruct)
 
 ; Arthur: Use the other 4 to see if they are dead?
-p_h_j_b:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
+plyr_jump_hold_and_death_state:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
 
 .segment "CODE"
 
@@ -39,22 +80,8 @@ PLAYER_4C = 14
 PLAYER_4D = 15
 
 .proc SetupPlayer1
-    lda #180
-    sta player1+PlayerStruct::xpos
 
-    lda #120
-    sta player1+PlayerStruct::ypos
-
-    lda #$00
-    sta player1+PlayerStruct::jumpCounter
-
-
-    OAM_WRITE_TILE PLAYER_1A, #1
-    OAM_WRITE_TILE PLAYER_1B, #2
-    OAM_WRITE_TILE PLAYER_1C, #3
-    OAM_WRITE_TILE PLAYER_1D, #4
-
-    OAM_WRITE_ATTRIBUTE PLAYER_1A, OAM_ATRIB_FLIP_VERTICALLY
+    SETUP_PLAYER player1, PLAYER_1A
 
     rts
 
@@ -90,8 +117,8 @@ PLAYER_4D = 15
 
     NOT_GAMEPAD_RIGHT:
         lda #%00001110
-        and p_h_j_b ;flip p_h_j_b to false 
-        sta p_h_j_b
+        and plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to false 
+        sta plyr_jump_hold_and_death_state
         
         lda gamepad_1
         and #PAD_A
@@ -102,8 +129,8 @@ PLAYER_4D = 15
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00000001
-            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
-            sta p_h_j_b 
+            ora plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to true for p1 (0000 0001) -> flips this one
+            sta plyr_jump_hold_and_death_state 
             lda #$08   ;max value of player1+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
             cmp player1+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
@@ -136,55 +163,24 @@ PLAYER_4D = 15
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda p_h_j_b
+    lda plyr_jump_hold_and_death_state
     and #%00000001  ;checks for that players bit
     cmp #$0
-    bne SET_PLAYER_Y
+    bne SET_PLAYER_XY
     ;if the jump button isnt being held down than resets counter
     lda #$0
     sta player1+PlayerStruct::jumpCounter
 
-    SET_PLAYER_Y:
-    lda player1+PlayerStruct::ypos
-    sec
-    adc player1+PlayerStruct::gravity ;gravity 
-    sta player1+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_1A
-    OAM_WRITE_Y_A PLAYER_1B
-    sec 
-    adc #7
-    OAM_WRITE_Y_A PLAYER_1C
-    OAM_WRITE_Y_A PLAYER_1D
-
-    lda player1+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_1A
-    OAM_WRITE_X_A PLAYER_1C 
-    sec 
-    adc #7
-    OAM_WRITE_X_A PLAYER_1B
-    OAM_WRITE_X_A PLAYER_1D 
+    SET_PLAYER_XY:
+    SET_XY player1,PLAYER_1A
 
 
     rts
 .endproc
 
 .proc SetupPlayer2
-    lda #180 + 8
-    sta player2+PlayerStruct::xpos
 
-    lda #120
-    sta player2+PlayerStruct::ypos
-
-
-    lda player2+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_2A
-
-    lda player2+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_2A
-
-    OAM_WRITE_TILE PLAYER_2A, #2
-
-    OAM_WRITE_ATTRIBUTE PLAYER_2A, %10000000
+    SETUP_PLAYER player2, PLAYER_2A
 
     rts
 
@@ -246,8 +242,8 @@ PLAYER_4D = 15
 
     NOT_GAMEPAD_DOWN:
         lda #%00001101
-        and p_h_j_b ;flip p_h_j_b to false 
-        sta p_h_j_b
+        and plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to false 
+        sta plyr_jump_hold_and_death_state
         
         lda gamepad_2
         and #PAD_A
@@ -258,8 +254,8 @@ PLAYER_4D = 15
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00000010
-            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
-            sta p_h_j_b 
+            ora plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to true for p1 (0000 0001) -> flips this one
+            sta plyr_jump_hold_and_death_state 
             lda #$08   ;max value of player2+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
             cmp player2+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
@@ -292,41 +288,23 @@ PLAYER_4D = 15
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda p_h_j_b
+    lda plyr_jump_hold_and_death_state
     and #%00000010  ;checks for that players bit
     cmp #$0
-    bne SET_PLAYER_Y
+    bne SET_PLAYER_XY
     ;if the jump button isnt being held down than resets counter
     lda #$0
     sta player2+PlayerStruct::jumpCounter
 
-    SET_PLAYER_Y:
-    lda player2+PlayerStruct::ypos
-    sec
-    adc player2+PlayerStruct::gravity ;gravity 
-    sta player2+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_2A
+    SET_PLAYER_XY:
+    SET_XY player2,PLAYER_2A
 
     rts
 .endproc
 
 .proc SetupPlayer3
-    lda #180
-    sta player3+PlayerStruct::xpos
 
-    lda #120 + 8
-    sta player3+PlayerStruct::ypos
-
-
-    lda player3+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_3A
-
-    lda player3+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_3A
-
-    OAM_WRITE_TILE PLAYER_3A, #3
-
-    OAM_WRITE_ATTRIBUTE PLAYER_3A, %10000000
+    SETUP_PLAYER player3,PLAYER_3A
 
     rts
 
@@ -388,8 +366,8 @@ PLAYER_4D = 15
 
     NOT_GAMEPAD_DOWN:
         lda #%00001011
-        and p_h_j_b ;flip p_h_j_b to false 
-        sta p_h_j_b
+        and plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to false 
+        sta plyr_jump_hold_and_death_state
         
         lda gamepad_3
         and #PAD_A
@@ -400,8 +378,8 @@ PLAYER_4D = 15
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00000100
-            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
-            sta p_h_j_b 
+            ora plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to true for p1 (0000 0001) -> flips this one
+            sta plyr_jump_hold_and_death_state 
             lda #$08   ;max value of player3+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
             cmp player3+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
@@ -434,42 +412,24 @@ PLAYER_4D = 15
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda p_h_j_b
+    lda plyr_jump_hold_and_death_state
     and #%00000100  ;checks for that players bit
     cmp #$0
-    bne SET_PLAYER_Y
+    bne SET_PLAYER_XY
     ;if the jump button isnt being held down than resets counter
     lda #$0
     sta player3+PlayerStruct::jumpCounter
 
-    SET_PLAYER_Y:
-    lda player3+PlayerStruct::ypos
-    sec
-    adc player3+PlayerStruct::gravity ;gravity 
-    sta player3+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_3A
+    SET_PLAYER_XY:
+    SET_XY player3,PLAYER_3A
 
     rts
 .endproc
 
 .proc SetupPlayer4
 
-    lda #180 + 8
-    sta player4+PlayerStruct::xpos
-
-    lda #120 + 8
-    sta player4+PlayerStruct::ypos
-
-    lda player4+PlayerStruct::xpos
-    OAM_WRITE_X_A PLAYER_4A
-
-    lda player4+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_4A
-
-    OAM_WRITE_TILE PLAYER_4A, #4
-
-    OAM_WRITE_ATTRIBUTE PLAYER_4A, %10000000
-
+    SETUP_PLAYER player4,PLAYER_4A
+    
     rts
 
 .endproc
@@ -530,8 +490,8 @@ PLAYER_4D = 15
 
     NOT_GAMEPAD_DOWN:
         lda #%00000111
-        and p_h_j_b ;flip p_h_j_b to false 
-        sta p_h_j_b
+        and plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to false 
+        sta plyr_jump_hold_and_death_state
         
         lda gamepad_4
         and #PAD_A
@@ -542,8 +502,8 @@ PLAYER_4D = 15
             cmp #0
             beq NOT_GAMEPAD_A
             lda #%00001000
-            ora p_h_j_b ;flip p_h_j_b to true for p1 (0000 0001) -> flips this one
-            sta p_h_j_b 
+            ora plyr_jump_hold_and_death_state ;flip plyr_jump_hold_and_death_state to true for p1 (0000 0001) -> flips this one
+            sta plyr_jump_hold_and_death_state 
             lda #$08   ;max value of player2+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
             cmp player4+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
@@ -576,20 +536,17 @@ PLAYER_4D = 15
 
     BRANCH_ON_TERMINAL_VELOCITY:
 
-    lda p_h_j_b
+    lda plyr_jump_hold_and_death_state
     and #%00001000  ;checks for that players bit
     cmp #$0
-    bne SET_PLAYER_Y
+    bne SET_PLAYER_XY
     ;if the jump button isnt being held down than resets counter
     lda #$0
     sta player4+PlayerStruct::jumpCounter
 
-    SET_PLAYER_Y:
-    lda player4+PlayerStruct::ypos
-    sec
-    adc player4+PlayerStruct::gravity ;gravity 
-    sta player4+PlayerStruct::ypos
-    OAM_WRITE_Y_A PLAYER_4A
+    SET_PLAYER_XY:
+    SET_XY player4,PLAYER_4A
 
     rts
 .endproc
+
