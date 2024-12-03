@@ -96,7 +96,7 @@
         beq NOT_GAMEPAD_RIGHT
         ; GOING RIGHT
             lda player+PlayerStruct::xpos
-            cmp #248
+            cmp #240
             beq NOT_GAMEPAD_RIGHT ; FREE OVERFLOW
             clc
             adc #1
