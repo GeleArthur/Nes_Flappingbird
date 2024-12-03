@@ -20,14 +20,16 @@ pipe_data: ; The bird needs to be between these 2
     lda scroll_pos
     adc player1+PlayerStruct::xpos
     and #%00100000
-    beq end
+    bne checkY
 
     lda scroll_pos
     adc player1+PlayerStruct::xpos
     adc #16
     and #%00100000
-    beq end
+    bne checkY
+    jmp end
     
+checkY:
     lda scroll_pos
     adc player1+PlayerStruct::xpos
 

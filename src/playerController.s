@@ -11,7 +11,7 @@
    lda #180
    sta player+PlayerStruct::xpos
 
-   lda #120
+   lda #200
    sta player+PlayerStruct::ypos
 
    lda #$00
@@ -29,7 +29,7 @@
 .macro SET_XY  player, playerOAM
     lda player+PlayerStruct::ypos
     sec
-    adc player+PlayerStruct::gravity ;gravity 
+    ; adc player+PlayerStruct::gravity ;gravity 
     sta player+PlayerStruct::ypos
     OAM_WRITE_Y_A playerOAM
     OAM_WRITE_Y_A (playerOAM+1)
