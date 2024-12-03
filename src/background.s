@@ -13,9 +13,7 @@ LoadBackground:
   LDA #0
   STA scroll_pos
   PPU_SETADDR $2000
-  LDX #$00              ; start out at 0
-  LDY #$00
-
+  
 LoadBackgroundLoop:
   lda #<pipes_name_table
   sta nametable_ptr_1

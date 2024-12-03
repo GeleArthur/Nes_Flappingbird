@@ -65,7 +65,7 @@
    sta oam + (index * 4) + 1
 .endmacro
 
-.macro OAM_WRITE_ATTRUDE index, attr
+.macro OAM_WRITE_ATTRIBUTE index, attr
    lda attr
    sta oam + (index * 4) + 2
 .endmacro

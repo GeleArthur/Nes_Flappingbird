@@ -29,7 +29,7 @@ oam: .res 256
     inc nmi_ready
 @waitVBlank:
     lda nmi_ready
- 	bne @waitVBlank ; If nmi_ready == 1 -> wait
+bne @waitVBlank ; If nmi_ready == 1 -> wait
 .endmacro
 
 ; nmi will call this onces its reached vblank
