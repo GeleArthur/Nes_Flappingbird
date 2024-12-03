@@ -14,6 +14,7 @@
 .include "../assets/nametable01.s"
 .include "background.s"
 .include "playerController.s"
+.include "failstate.s"
 .include "pipes.s"
 .include "startScreen.s"
 .include "pauseGame.s"
@@ -29,6 +30,10 @@
     OAM_WRITE_X 0, #100
     OAM_WRITE_Y 0, #100
     OAM_WRITE_TILE 0, #1
+
+    ; Setup player lives
+    lda #%00001111
+    sta playerDeathStates
 
     jsr SetupPlayer1
     jsr SetupPlayer2
@@ -54,15 +59,16 @@
 
     jsr GamepadPoll
 
-    jsr UpdatePlayer1
-    jsr UpdatePlayer2
-    jsr UpdatePlayer3
-    jsr UpdatePlayer4
+    jsr HandlePlayer1
+    jsr HandlePlayer2
+    jsr HandlePlayer3
+    jsr HandlePlayer4
 
     jsr CollisionPlayer1
     jsr ScrollBackground
 
     jsr PauseGameCheck
+    jsr EndOfGame
 
 
     WAIT_UNITL_FRAME_HAS_RENDERED

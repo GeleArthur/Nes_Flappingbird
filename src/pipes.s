@@ -50,8 +50,8 @@ collided:
     OAM_WRITE_X 32, #100
     OAM_WRITE_Y 32, player1+PlayerStruct::ypos
     OAM_WRITE_TILE 32, #2
-
-
+    
+    CHECK_DEATH %00000001
 end:
     rts
 .endproc
