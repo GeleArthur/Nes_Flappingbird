@@ -17,8 +17,13 @@
 .include "playerInput.s"
 .include "pipes.s"
 
+.include "audio.s"
+
+
 
 .segment "CODE"
+
+
 .proc reset
     NES_INIT ; Setup nes
 
@@ -43,6 +48,9 @@
 
     jsr SetupBackground
 
+    jsr audio_init
+    jsr audio_title_screen
+
 
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
     sta PPU_MASK ; Enable sprite and background rendering
@@ -64,6 +72,7 @@
     jsr CollisionPlayer1
     jsr ScrollBackground
 
+    JSR famistudio_update
 
     WAIT_UNITL_FRAME_HAS_RENDERED
     jmp Main
