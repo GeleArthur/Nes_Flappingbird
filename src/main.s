@@ -19,9 +19,6 @@
 .include "pauseGame.s"
 
 .include "audio.s"
-
-
-
 .segment "CODE"
 
 

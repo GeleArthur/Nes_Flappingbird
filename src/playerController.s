@@ -6,24 +6,35 @@
     jumpCounter .byte
 .endstruct
 
-.macro  SETUP_PLAYER   player, playerOAM 
+.macro  SETUP_PLAYER   player, playerOAM ,  paletteIndex
 
+   ; Initialize player's position
+   lda #180
    lda #32
    sta player+PlayerStruct::xpos
 
    lda #48
    sta player+PlayerStruct::ypos
 
+   ; Initialize player's jump counter
    lda #$00
    sta player+PlayerStruct::jumpCounter
 
-
+   ; Set up OAM tiles for the player
    OAM_WRITE_TILE playerOAM, #1
    OAM_WRITE_TILE (playerOAM+1), #2
    OAM_WRITE_TILE (playerOAM+2), #3
    OAM_WRITE_TILE (playerOAM+3), #4
 
-   OAM_WRITE_ATTRIBUTE playerOAM, %11111111
+   ; Calculate palette attribute (masking bits 0-1 for palette)
+   lda paletteIndex
+   and #%00000011
+   ora #%00000000 ; Ensure other bits are zeroed (or customize for flipping/priority if needed)
+   OAM_WRITE_ATTRIBUTE playerOAM, paletteIndex
+   OAM_WRITE_ATTRIBUTE (playerOAM+1), paletteIndex
+   OAM_WRITE_ATTRIBUTE (playerOAM+2), paletteIndex
+   OAM_WRITE_ATTRIBUTE (playerOAM+3), paletteIndex
+
 .endmacro
 
 .macro SET_XY  player, playerOAM
@@ -168,7 +179,7 @@ PLAYER_4D = 15
 
 .proc SetupPlayer1
 
-    SETUP_PLAYER player1, PLAYER_1A
+    SETUP_PLAYER player1, PLAYER_1A, #$00
 
     rts
 
@@ -183,7 +194,7 @@ PLAYER_4D = 15
 
 .proc SetupPlayer2
 
-    SETUP_PLAYER player2, PLAYER_2A
+    SETUP_PLAYER player2, PLAYER_2A, #$01
 
     rts
 
@@ -198,7 +209,7 @@ PLAYER_4D = 15
 
 .proc SetupPlayer3
 
-    SETUP_PLAYER player3,PLAYER_3A
+    SETUP_PLAYER player3,PLAYER_3A, #$02
 
     rts
 
@@ -213,7 +224,7 @@ PLAYER_4D = 15
 
 .proc SetupPlayer4
 
-    SETUP_PLAYER player4,PLAYER_4A
+    SETUP_PLAYER player4,PLAYER_4A, #$03
     
     rts
 
