@@ -18,8 +18,13 @@
 .include "startScreen.s"
 .include "pauseGame.s"
 
+.include "audio.s"
+
+
 
 .segment "CODE"
+
+
 .proc reset
     NES_INIT ; Setup nes
     
@@ -36,6 +41,9 @@
     jsr SetupPlayer4
 
     jsr SetupBackground
+    
+    jsr audio_init
+    jsr audio_title_screen
 
     lda #CTRL_NMI
     sta PPU_CTRL ; Enable NMI.
@@ -63,6 +71,7 @@
     jsr ScrollBackground
 
     jsr PauseGameCheck
+    jsr famistudio_update
 
 
     WAIT_UNITL_FRAME_HAS_RENDERED
