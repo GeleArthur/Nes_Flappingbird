@@ -9,7 +9,7 @@ pipe_data: ; The bird needs to be between these 2
 .byte 5*8, 13*8
 .byte 9*8, 17*8
 
-.macro ColliderPlayer which_player
+.macro ColliderPlayer which_player, playerDeathStateBit
     OAM_WRITE_X 32, #100
     OAM_WRITE_Y 32, #255
     OAM_WRITE_TILE 32, #2
@@ -57,7 +57,7 @@ collided:
     OAM_WRITE_Y 32, which_player+PlayerStruct::ypos
     OAM_WRITE_TILE 32, #2
 
-    
+    CHECK_DEATH playerDeathStateBit
 end:
 
 
@@ -65,21 +65,21 @@ end:
 
 .segment "CODE"
 .proc CollisionPlayer1
-    ColliderPlayer player1
+    ColliderPlayer player1, %00000001
     rts
 .endproc
 
 .proc CollisionPlayer2
-    ColliderPlayer player2
+    ColliderPlayer player2, %00000010
     rts
 .endproc
 
 .proc CollisionPlayer3
-    ColliderPlayer player3
+    ColliderPlayer player3, %00000100
     rts
 .endproc
 
 .proc CollisionPlayer4
-    ColliderPlayer player4
+    ColliderPlayer player4, %00001000
     rts
 .endproc

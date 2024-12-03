@@ -23,7 +23,7 @@ playerDeathStates: .res 1
 
 .proc EndOfGame
     lda playerDeathStates
-    and #%0000011
+    and #%0001111
     bne endOfEndGameCheck
 
     jmp reset
