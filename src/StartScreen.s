@@ -1,6 +1,7 @@
 .segment "ZEROPAGE"
 
 Have_Players_Pressed_A: .res 1
+Player_Jmp_Counter: .res 1
 
 
 .macro  CheckForA gamepad, plyrBit
@@ -9,24 +10,55 @@ Have_Players_Pressed_A: .res 1
     and #PAD_A      
     beq End
     lda plyrBit
-    ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for p1 (0000 0001) -> flips this one
+    ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for plyr (plyrbitmask) -> flips this one
     sta Have_Players_Pressed_A 
 
     End:
 .endscope
 .endmacro
 
-.macro UpdateOrJumpingPlyr player, playerOAM , gamepad ,paletteIndex , XOffset, plyrBitMask
+.macro UpdateOrJumpingPlyr player, playerOAM , gamepad , plyrBitMask , jmpOffset
 .scope
     lda Have_Players_Pressed_A
     and plyrBitMask
     bne UpdatePlayer
-    SETUP_PLAYER player, playerOAM, paletteIndex, XOffset
+    ;replace with a simple jumping loop
+    PlyrJumping player, jmpOffset
     SET_XY player,playerOAM
 
     jmp End
     UpdatePlayer:
     UPDATE_PLAYER player, playerOAM, gamepad, plyrBitMask
+    End:
+
+.endscope
+.endmacro
+
+.macro PlyrJumping player, offset
+.scope
+
+    lda Player_Jmp_Counter
+    cmp #$20
+    bpl DontJump ; if greater than $04 than go down
+    ADD_Y #$02, player
+    jmp Increment
+
+    DontJump:
+    cmp #$40 ; if 41 reset the counter to 0 else go down
+    beq ResetCounter
+    ADD_Y #$01, player
+    SUB_Y #$00, player
+    jmp Increment
+
+
+    Increment:
+    inc Player_Jmp_Counter
+    jmp End
+
+    ResetCounter:
+    lda #$0
+    sta Player_Jmp_Counter
+
     End:
 
 .endscope
@@ -65,6 +97,12 @@ StayInStartScreen:
         lda nmi_ready
     bne @waitVBlank2 ; If nmi_ready == 1 -> wait    
 
+    lda Have_Players_Pressed_A
+    and #%10000000
+    bne SkipSetup
+    jsr SetupPlayers
+
+    SkipSetup:
     jsr UpdateOrJumpingPlyrs
   
     jsr CheckForPlayersPressingA
@@ -87,12 +125,25 @@ StayInStartScreen:
 
 .endproc
 
+.proc SetupPlayers
+
+    SETUP_PLAYER player1,PLAYER_1, #$00, #$0 
+    SETUP_PLAYER player2,PLAYER_2, #$01, #$10
+    SETUP_PLAYER player3,PLAYER_3, #$02, #$20
+    SETUP_PLAYER player4,PLAYER_4, #$03, #$30
+
+    lda #%10000000
+    ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for p1 (1000 0000) -> flips this one
+    sta Have_Players_Pressed_A 
+
+.endproc
+
 .proc UpdateOrJumpingPlyrs
 
-    UpdateOrJumpingPlyr player1,PLAYER_1, gamepad_1, #$00, #$0 , #%00000001
-    UpdateOrJumpingPlyr player2,PLAYER_2, gamepad_2, #$01, #$10, #%00000010
-    UpdateOrJumpingPlyr player3,PLAYER_3, gamepad_3, #$02, #$20, #%00000100
-    UpdateOrJumpingPlyr player4,PLAYER_4, gamepad_4, #$03, #$30, #%00001000
+    UpdateOrJumpingPlyr player1,PLAYER_1, gamepad_1, #%00000001 , #$06
+    UpdateOrJumpingPlyr player2,PLAYER_2, gamepad_2, #%00000010 , #$03
+    UpdateOrJumpingPlyr player3,PLAYER_3, gamepad_3, #%00000100 , #$01
+    UpdateOrJumpingPlyr player4,PLAYER_4, gamepad_4, #%00001000 , #$04
 
 .endproc
 

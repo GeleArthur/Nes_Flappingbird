@@ -37,6 +37,20 @@
 
 .endmacro
 
+.macro ADD_Y value,player
+    lda player+PlayerStruct::ypos  
+    sec
+    sbc value
+    sta player+PlayerStruct::ypos   
+.endmacro
+
+.macro SUB_Y value,player
+    lda player+PlayerStruct::ypos  
+    sec
+    adc value
+    sta player+PlayerStruct::ypos   
+.endmacro
+
 .macro SET_XY  player, playerOAM
     lda player+PlayerStruct::ypos
     sec
