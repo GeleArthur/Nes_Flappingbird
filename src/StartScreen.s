@@ -38,13 +38,13 @@ Player_Jmp_Counter: .res 1
 .scope
 
     lda Player_Jmp_Counter
-    cmp #$20
+    cmp #$24
     bpl DontJump ; if greater than $04 than go down
     ADD_Y #$02, player
     jmp Increment
 
     DontJump:
-    cmp #$40 ; if 41 reset the counter to 0 else go down
+    cmp #$47 ; if 41 reset the counter to 0 else go down
     beq ResetCounter
     ADD_Y #$01, player
     SUB_Y #$00, player
