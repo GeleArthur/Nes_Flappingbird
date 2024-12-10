@@ -53,13 +53,13 @@
 
 .segment "RODATA"
 default_palette:
-.byte $2C ; background color. If you change this also change the mirrored background color
-.byte $11,$26,$37 ; bg0 purple/pink
-.byte $0F,$09,$19,$1D ; bg1 green
-.byte $0F,$01,$11,$21 ; bg2 blue
-.byte $0F,$00,$10,$30 ; bg3 greyscale
+.byte $21 ; background color. If you change this also change the mirrored background color
+.byte $29,$1A,$0F ; bg0 purple/pink
+.byte $0F,$0C,$21,$32 ; bg1 green
+.byte $0F,$29,$16,$27 ; bg2 blue
+.byte $0F,$30,$2D,$29 ; bg3 greyscale
 
-.byte $2C ; mirrored background color. 
+.byte $21 ; mirrored background color. 
 .byte $18,$28,$38 ; sp0 yellow
 .byte $0F,$14,$24,$34 ; sp1 purple
 .byte $0F,$1B,$2B,$3B ; sp2 teal

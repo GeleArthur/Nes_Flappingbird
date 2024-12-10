@@ -42,6 +42,9 @@ Have_Players_Pressed_A: .res 1
     lda #CTRL_NMI
     sta PPU_CTRL
 
+    jsr SetupTitleScreen
+    
+
     WAIT_UNITL_FRAME_HAS_RENDERED
 
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP

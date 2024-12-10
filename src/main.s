@@ -2,6 +2,9 @@
 .include "helpers/macros.s"
 .include "helpers/subroutines.s"
 
+.include "../assets/nametableStartscreen.s"
+
+
 .include "setup/header.s"
 .include "setup/vectors.s"
 .include "setup/nmi-vblank.s"
@@ -18,6 +21,7 @@
 .include "pipes.s"
 .include "startScreen.s"
 .include "pauseGame.s"
+
 
 .include "audio.s"
 .segment "CODE"

@@ -4,6 +4,9 @@
 nametable_ptr_1: .res 1
 nametable_ptr_2: .res 1
 
+title_ptr_1: .res 1
+title_ptr_2: .res 1
+
 scroll_pos: .res 1
 nametableIndex: .res 1
 
@@ -43,6 +46,50 @@ LoadAttributeLoop:
   inx                               ; X = X + 1
   cpx #$40                          ; Compare X to hex $08, decimal 8 - copying 8 bytes
   bne LoadAttributeLoop
+  rts
+.endproc
+
+.proc SetupTitleScreen
+  LoadBackground:
+  LDA #0
+  STA scroll_pos
+  PPU_SETADDR $2000
+  
+LoadBackgroundLoop:
+  lda #<nametableStartscreen
+  sta title_ptr_1
+  lda #>nametableStartscreen
+  sta title_ptr_2
+  ldx #4 ; do this loop 4 times
+  ldy #0
+:
+	lda (<title_ptr_1), Y
+	sta PPU_DATA
+	iny
+	bne :-
+	dex
+	beq :+ ; finished if X = 0
+	inc title_ptr_2 ; ptr = ptr + 256
+	jmp :- ; loop again: Y = 0, X -= 1, ptr += 256
+:
+
+LoadAttribute:
+  PPU_SETADDR $23C0
+  ldx #$00              ; start out at 0
+
+LoadAttributeLoop:
+  lda attributeTableStartScreen, x      ; load data from address (attribute + the value in x)
+  sta PPU_DATA             ; write to PPU
+  inx                   ; X = X + 1
+  cpx #$40              ; Compare X to hex $08, decimal 8 - copying 8 bytes
+  bne LoadAttributeLoop
+
+  inc scroll_pos
+  lda scroll_pos
+  sta PPU_SCROLL
+  lda #0
+  sta PPU_SCROLL
+  
   rts
 .endproc
 
