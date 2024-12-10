@@ -45,6 +45,7 @@ bne @waitVBlank ; If nmi_ready == 1 -> wait
     beq skipRenderingFrame ; If the nmi_ready is 0 we skip as the cpu is not ready rendering the frame
     
     COPY_OAM
+    jsr ScrollBackground
 
     ; Optinal add setting the CTRL and MASK options but as long we dont change them it should be fine
 

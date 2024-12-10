@@ -67,7 +67,7 @@
     ;jsr CollisionPlayer2
     ;jsr CollisionPlayer3
     ;jsr CollisionPlayer4
-    jsr ScrollBackground
+    ; jsr ScrollBackground
 
     jsr PauseGameCheck
     jsr EndOfGame

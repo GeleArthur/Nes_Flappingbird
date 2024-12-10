@@ -72,7 +72,7 @@ LoadAttributeLoop:
   asl A
   asl A
   asl A
-  asl A             
+  asl A
   sta sourceLow
   lda columnNumber
   lsr A
@@ -187,33 +187,33 @@ NTSwap:
 NTSwapCheckDone:
 ; Update background
 NewAttribCheck:
-  LDA scroll_pos
-  AND #%00011111            ; check for multiple of 32
-  BNE NewAttribCheckDone    ; if low 5 bits = 0, time to write new attribute bytes
-  jsr UpdateAttributeBackground
+    lda scroll_pos
+    and #%00011111            ; check for multiple of 32
+    bne NewAttribCheckDone    ; if low 5 bits = 0, time to write new attribute bytes
+    jsr UpdateAttributeBackground
 NewAttribCheckDone:
 
 
 NewColumnCheck:
-  LDA scroll_pos
-  AND #%00000111            ; throw away higher bits to check for multiple of 8
-  BNE NewColumnCheckDone    ; done if lower bits != 0
-  JSR UpdateBackground         ; if lower bits = 0, time for new column
-  
-  lda columnNumber
-  clc
-  adc #$01             ; go to next column
-  and #%01111111       ; only 128 columns of data, throw away top bit to wrap
-  sta columnNumber
+    lda scroll_pos
+    and #%00000111            ; throw away higher bits to check for multiple of 8
+    bne NewColumnCheckDone    ; done if lower bits != 0
+    jsr UpdateBackground         ; if lower bits = 0, time for new column
+    
+    lda columnNumber
+    clc
+    adc #$01             ; go to next column
+    and #%01111111       ; only 128 columns of data, throw away top bit to wrap
+    sta columnNumber
 NewColumnCheckDone:
 
 ;This is the PPU clean up section, so rendering the next frame starts properly.
-lda #CTRL_NMI|CTRL_SPR_1000
-ora nametableIndex    ; select correct nametable for bit 0
-sta PPU_CTRL
-
-lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP   ; enable sprites, enable background, no clipping on left side
-sta PPU_MASK
+    lda #CTRL_NMI|CTRL_SPR_1000
+    ; ora nametableIndex    ; select correct nametable for bit 0
+    ; sta PPU_CTRL
+    
+    ; lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP   ; enable sprites, enable background, no clipping on left side
+    ; sta PPU_MASK
 
 
 ; Load the background to the PPU
