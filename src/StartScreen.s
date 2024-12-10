@@ -108,7 +108,7 @@ StayInStartScreen:
     jsr CheckForPlayersPressingA
 
     lda Have_Players_Pressed_A
-    cmp #%00001111  
+    cmp #%10001111  
     bne StayInStartScreen
 
 
