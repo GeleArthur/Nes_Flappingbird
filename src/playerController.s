@@ -6,14 +6,14 @@
     jumpCounter .byte
 .endstruct
 
-.macro  SETUP_PLAYER   player, playerOAM ,  paletteIndex
+.macro  SETUP_PLAYER   player, playerOAM ,  paletteIndex , XOffset
 
    ; Initialize player's position
-   lda #180
-   lda #32
+   lda #62
+   adc XOffset
    sta player+PlayerStruct::xpos
 
-   lda #48
+   lda #112
    sta player+PlayerStruct::ypos
 
    ; Initialize player's jump counter
@@ -169,40 +169,21 @@ player2: .res .sizeof(PlayerStruct)
 player3: .res .sizeof(PlayerStruct)
 player4: .res .sizeof(PlayerStruct)
 
-; Arthur: Use the other 4 to see if they are dead?
+
 plyr_jump_hold_button:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
 
 .segment "CODE"
 
-PLAYER_1A = 0
-PLAYER_1B = 1
-PLAYER_1C = 2
-PLAYER_1D = 3
+PLAYER_1 = 0
 
-PLAYER_2A = 4
-PLAYER_2B = 5
-PLAYER_2C = 6
-PLAYER_2D = 7
+PLAYER_2 = 4
 
-PLAYER_3A = 8
-PLAYER_3B = 9
-PLAYER_3C = 10
-PLAYER_3D = 11
+PLAYER_3 = 8
 
-PLAYER_4A = 12
-PLAYER_4B = 13
-PLAYER_4C = 14
-PLAYER_4D = 15
-
-.proc SetupPlayer1
-
-    SETUP_PLAYER player1, PLAYER_1A, #$00
-
-    rts
-
-.endproc
+PLAYER_4 = 12
 
 .proc HandlePlayer1
+
     lda playerDeathStates
     and #%00000001
     beq :+
@@ -250,79 +231,55 @@ PLAYER_4D = 15
     rts
 .endproc
 
-; ALL BUGGED TO BE FIXED By NEXT GONCALO PATCH
 .proc UpdatePlayer1Death
     ; Set all player sprites (of this player) to the end of the screen.
-        SET_PLAYER_POSITION #255,#255,player1,PLAYER_1A
+        SET_PLAYER_POSITION #255,#255,player1,PLAYER_1
         rts
 .endproc
 
 .proc UpdatePlayer2Death
     ; Set all player sprites (of this player) to the end of the screen.
-        SET_PLAYER_POSITION #255,#240,player2,PLAYER_2A
+        SET_PLAYER_POSITION #255,#240,player2,PLAYER_2
         rts
 .endproc
 
 .proc UpdatePlayer3Death
     ; Set all player sprites (of this player) to the end of the screen.
-        SET_PLAYER_POSITION #255,#240,player3,PLAYER_3A
+        SET_PLAYER_POSITION #255,#240,player3,PLAYER_3
         rts
 .endproc
 
 .proc UpdatePlayer4Death
     ; Set all player sprites (of this player) to the end of the screen.
-        SET_PLAYER_POSITION #255,#240,player4,PLAYER_4A
+        SET_PLAYER_POSITION #255,#240,player4,PLAYER_4
         rts
 .endproc
 
+
 .proc UpdatePlayer1
 
-    UPDATE_PLAYER player1, PLAYER_1A, gamepad_1, #%00000001
+    UPDATE_PLAYER player1, PLAYER_1, gamepad_1, #%00000001
 
     rts
-.endproc
-
-.proc SetupPlayer2
-
-    SETUP_PLAYER player2, PLAYER_2A, #$01
-
-    rts
-
 .endproc
 
 .proc UpdatePlayer2
 
-   UPDATE_PLAYER player2, PLAYER_2A, gamepad_2, #%00000010
+   UPDATE_PLAYER player2, PLAYER_2, gamepad_2, #%00000010
 
     rts
-.endproc
-
-.proc SetupPlayer3
-
-    SETUP_PLAYER player3,PLAYER_3A, #$02
-
-    rts
-
 .endproc
 
 .proc UpdatePlayer3
 
-    UPDATE_PLAYER player3, PLAYER_3A, gamepad_3, #%00000100
+    UPDATE_PLAYER player3, PLAYER_3, gamepad_3, #%00000100
 
     rts
-.endproc
-
-.proc SetupPlayer4
-
-    SETUP_PLAYER player4,PLAYER_4A, #$03
-    
-    rts
-
 .endproc
 
 .proc UpdatePlayer4
 
-    UPDATE_PLAYER player4, PLAYER_4A, gamepad_4, #%00001000
+    UPDATE_PLAYER player4, PLAYER_4, gamepad_4, #%00001000
 
     rts
 .endproc

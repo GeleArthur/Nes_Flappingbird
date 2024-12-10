@@ -32,11 +32,6 @@
     lda #%00001111
     sta playerDeathStates
 
-    jsr SetupPlayer1
-    jsr SetupPlayer2
-    jsr SetupPlayer3
-    jsr SetupPlayer4
-
     jsr SetupBackground
     
     jsr audio_main_game

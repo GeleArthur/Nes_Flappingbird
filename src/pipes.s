@@ -10,9 +10,7 @@ pipe_data: ; The bird needs to be between these 2
 .byte 9*8, 17*8
 
 .macro ColliderPlayer which_player, playerDeathStateBit
-    OAM_WRITE_X 32, #100
-    OAM_WRITE_Y 32, #255
-    OAM_WRITE_TILE 32, #2
+
 
     lda scroll_pos
     adc which_player+PlayerStruct::xpos
@@ -53,9 +51,6 @@ checkY:
     jmp end
 
 collided:
-    OAM_WRITE_X 32, #100
-    OAM_WRITE_Y 32, which_player+PlayerStruct::ypos
-    OAM_WRITE_TILE 32, #2
 
     CHECK_DEATH playerDeathStateBit
 end:
