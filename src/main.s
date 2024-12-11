@@ -36,7 +36,7 @@
     lda #%00001111
     sta playerDeathStates
 
-    jsr SetupBackground
+    SET_NAMETABLE_DRAW_BACKGROUND pipes_name_table
     
     jsr audio_main_game
 

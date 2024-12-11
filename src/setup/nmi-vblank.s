@@ -26,10 +26,12 @@ oam: .res 256
 
 ; Sets the nmi_ready to 1 and waits until the nmi sets it back to 0
 .macro WAIT_UNITL_FRAME_HAS_RENDERED
+.scope
     inc nmi_ready
 @waitVBlank:
     lda nmi_ready
 bne @waitVBlank ; If nmi_ready == 1 -> wait
+.endscope
 .endmacro
 
 ; nmi will call this onces its reached vblank
@@ -48,7 +50,7 @@ bne @waitVBlank ; If nmi_ready == 1 -> wait
 
     ; Optinal add setting the CTRL and MASK options but as long we dont change them it should be fine
 
-    FRAME_IS_DONE_RENDERING 
+    FRAME_IS_DONE_RENDERING
 skipRenderingFrame:
 
     RESTORE_REGISTERS

@@ -74,8 +74,7 @@ Player_Jmp_Counter: .res 1
     lda #CTRL_NMI
     sta PPU_CTRL
 
-    jsr SetupTitleScreen
-    
+    SET_NAMETABLE_DRAW_BACKGROUND nametableStartscreen
 
     WAIT_UNITL_FRAME_HAS_RENDERED
 
@@ -116,10 +115,6 @@ StayInStartScreen:
     sta PPU_MASK 
     lda #0
     sta PPU_CTRL
-    
-    ; CALL TO pauseGame.s :(
-    ;lda #1
-    ;sta game_is_paused
 
     rts
 
