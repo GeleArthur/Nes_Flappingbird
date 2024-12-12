@@ -94,33 +94,21 @@ NTSwapCheckDone:
   adc #$20          ; add high byte of nametable base address ($2000)
   sta ppuWriteLocation+1    ; now address = $20 or $24 for nametable 0 or 1
 
-  lda columnNumber  ; column number * 32 = column data offset
-  asl A
-  asl A
-  asl A
-  asl A
-  asl A
-  sta sourceLow
+  clc
   lda columnNumber
-  lsr A
-  lsr A
-  lsr A
-  sta sourceHigh
-  
-  lda sourceLow       ; column data start + offset = address to load column data from
-  clc 
   adc #<(LowPipesNameTable)
   sta sourceLow
-  lda sourceHigh
-  adc #>(LowPipesNameTable)
+
+  lda #>(LowPipesNameTable)
   sta sourceHigh
+  
+  
 
 DrawColumn:
   lda #%00000100        ; set to increment +32 mode
   sta PPU_CTRL
-  
-  lda PPU_STATUS             ; read PPU status to reset the high/low latch
 
+  lda PPU_STATUS             ; read PPU status to reset the high/low latch
   
   lda ppuWriteLocation+1
   sta PPU_ADDR             ; write the high byte of column address
@@ -139,7 +127,8 @@ DrawColumnLoop:
 
   bcc @overflowSkip
   inc sourceLow+1
-  dec sourceLow
+  clc
+  ; dec sourceLow
 @overflowSkip:
 
 
