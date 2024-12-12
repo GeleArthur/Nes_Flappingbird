@@ -9,7 +9,6 @@ scroll_pos: .res 1
 flippingScroll: .res 1
 
 ppuWriteLocation:  .res 2  ; low byte of new column address
-; columnHigh: .res 1  ; high byte of new column address
 sourceLow:  .res 1  ; source for column data
 sourceHigh: .res 1
 columnNumber: .res 1  ; which column of level data to draw
@@ -101,15 +100,13 @@ NTSwapCheckDone:
 
   lda #>(LowPipesNameTable)
   sta sourceHigh
-  
-  
 
 DrawColumn:
   lda #%00000100        ; set to increment +32 mode
   sta PPU_CTRL
 
   lda PPU_STATUS             ; read PPU status to reset the high/low latch
-  
+
   lda ppuWriteLocation+1
   sta PPU_ADDR             ; write the high byte of column address
   lda ppuWriteLocation
@@ -229,7 +226,7 @@ NewColumnCheck:
   lda columnNumber
   clc
   adc #$01             ; go to next column
-  and #%01111111       ; only 128 columns of data, throw away top bit to wrap
+  and #%00001111       ; only 128 columns of data, throw away top bit to wrap
   sta columnNumber
 NewColumnCheckDone:
 
