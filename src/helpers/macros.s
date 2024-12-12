@@ -20,11 +20,11 @@
 .endmacro
 
 .macro PPU_SETADDR newaddress
-    PPU_CLEAR_W
-    lda #>newaddress
-    sta PPU_ADDR
-    lda #<newaddress
-    sta PPU_ADDR
+  PPU_CLEAR_W
+  lda #>newaddress
+  sta PPU_ADDR
+  lda #<newaddress
+  sta PPU_ADDR
 .endmacro
 
 .macro PPU_SETDATA data

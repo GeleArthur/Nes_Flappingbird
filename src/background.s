@@ -105,8 +105,9 @@ DrawColumn:
   lda #%00000100        ; set to increment +32 mode
   sta PPU_CTRL
 
-  lda PPU_STATUS             ; read PPU status to reset the high/low latch
+  PPU_CLEAR_W             ; read PPU status to reset the high/low latch
 
+  ; PPU_SETADDR ppuWriteLocation
   lda ppuWriteLocation+1
   sta PPU_ADDR             ; write the high byte of column address
   lda ppuWriteLocation
@@ -125,11 +126,7 @@ DrawColumnLoop:
   bcc @overflowSkip
   inc sourceLow+1
   clc
-  ; dec sourceLow
 @overflowSkip:
-
-
-  ; iny
   dex
   bne DrawColumnLoop
   rts
