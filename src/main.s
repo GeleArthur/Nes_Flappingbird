@@ -36,7 +36,7 @@
     lda #%00001111
     sta playerDeathStates
 
-    SET_NAMETABLE_DRAW_BACKGROUND pipes_name_table
+    ;SET_NAMETABLE_DRAW_BACKGROUND pipes_name_table
     
     jsr audio_main_game
 
@@ -62,10 +62,11 @@
     jsr HandlePlayer3
     jsr HandlePlayer4
 
-    jsr CollisionPlayer1
-    jsr CollisionPlayer2
-    jsr CollisionPlayer3
-    jsr CollisionPlayer4
+    ; jsr CollisionPlayer1
+    ; jsr CollisionPlayer2
+    ; jsr CollisionPlayer3
+    ; jsr CollisionPlayer4
+
     jsr ScrollBackground
 
     jsr PauseGameCheck

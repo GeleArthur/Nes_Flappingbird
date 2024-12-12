@@ -92,9 +92,7 @@ StayInStartScreen:
     jsr GamepadPoll
     
     inc nmi_ready
-    @waitVBlank2:
-        lda nmi_ready
-    bne @waitVBlank2 ; If nmi_ready == 1 -> wait    
+    WAIT_UNITL_FRAME_HAS_RENDERED  
 
     lda Have_Players_Pressed_A
     and #%10000000

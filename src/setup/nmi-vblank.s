@@ -48,6 +48,8 @@ bne @waitVBlank ; If nmi_ready == 1 -> wait
     
     COPY_OAM
 
+    jsr NMIBackgroundDraw
+
     ; Optinal add setting the CTRL and MASK options but as long we dont change them it should be fine
 
     FRAME_IS_DONE_RENDERING
