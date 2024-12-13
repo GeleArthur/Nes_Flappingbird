@@ -132,70 +132,84 @@ DrawColumnLoop:
   rts
 .endproc  
   
-; .proc DrawAttributeSlide  
-; DrawNewAttributes:
-;   lda flippingScroll
-;   eor #$01          ; invert low bit, A = $00 or $01
-;   asl A             ; shift up, A = $00 or $02
-;   asl A             ; $00 or $04
-;   clc
-;   adc #$23          ; add high byte of attribute base address ($23C0)
-;   sta columnHigh    ; now address = $23 or $27 for nametable 0 or 1
+.proc DrawAttributeSlide  
+DrawNewAttributes:
+  lda flippingScroll
+  eor #$01          ; invert low bit, A = $00 or $01
+  asl            ; shift up, A = $00 or $02
+  asl            ; $00 or $04
+  clc
+  adc #$23          ; add high byte of attribute base address ($23C0)
+  sta ppuWriteLocation+1    ; now address = $23 or $27 for nametable 0 or 1
   
-;   lda scroll_pos
-;   lsr A
-;   lsr A
-;   lsr A
-;   lsr A
-;   lsr A
-;   clc
-;   adc #$C0
-;   sta columnLow     ; attribute base + scroll / 32
+  lda scroll_pos
+  lsr
+  lsr
+  lsr
+  lsr
+  lsr
+  clc
+  adc #$C0
+  sta ppuWriteLocation     ; attribute base + scroll / 32
 
-;   lda columnNumber  ; (column number / 4) * 8 = column data offset
-;   and #%11111100
-;   asl A
-;   sta sourceLow
-;   lda columnNumber
-;   lsr A
-;   lsr A
-;   lsr A
-;   lsr A
-;   lsr A
-;   lsr A
-;   lsr A
-;   sta sourceHigh
+
+
+  lda columnNumber  ; (column number / 4) = column data offset
+  ; and #%11111100
+  ; asl
+  lsr
+  lsr
   
-;   lda sourceLow       ; column data start + offset = address to load column data from
-;   clc 
-;   adc #<(attributeTable01)
-;   sta sourceLow
-;   lda sourceHigh
-;   adc #>(attributeTable01)
-;   sta sourceHigh
+  clc 
+  adc #<(LowPipesAttributeTable)
+  sta sourceLow
 
-;   ldy #$00
-;   lda $2002             ; read PPU status to reset the high/low latch
-; DrawNewAttributesLoop:
-;   lda columnHigh
-;   sta $2006             ; write the high byte of column address
-;   lda columnLow
-;   sta $2006             ; write the low byte of column address
-;   lda (sourceLow), y    ; copy new attribute byte
-;   sta $2007
+  lda #>(LowPipesAttributeTable)
+  sta sourceHigh
+
+  lda #%00000000 ; Turn off +32 mode
+  sta PPU_CTRL
+
+  PPU_CLEAR_W
+  ldy #$00
+
+DrawNewAttributesLoop:
+  lda ppuWriteLocation+1
+  sta PPU_ADDR             ; write the high byte of column address
+  lda ppuWriteLocation
+  sta PPU_ADDR             ; write the low byte of column address
+  lda (sourceLow), y    ; copy new attribute byte
+  sta PPU_DATA
+  
+
+
+
+  lda ppuWriteLocation ; Add 8 to sourcelow
+  clc
+  adc #$08
+  sta ppuWriteLocation
+  
+  tya ; Add 8 to y
+  clc
+  adc #$08
+  tay
+
+  cmp #64
+  beq @end
+  jmp DrawNewAttributesLoop
+  
   
 ;   iny
-;   cpy #$08              ; copy 8 attribute bytes
-;   beq DrawNewAttributesLoopDone 
   
-;   lda columnLow         ; next attribute byte is at address + 8
+;   lda ppuWriteLocation         ; next attribute byte is at address + 8
 ;   clc
 ;   adc #$08
-;   sta columnLow
+;   sta ppuWriteLocation
 ;   jmp DrawNewAttributesLoop
 ; DrawNewAttributesLoopDone:
-;   rts
-; .endproc
+@end:
+  rts
+.endproc
 
 
 
@@ -205,16 +219,15 @@ DrawColumnLoop:
   cmp #%10001111  
   bne end
 
-; Update background
-; NewAttribCheck:
-;     lda scroll_pos
-;     and #%00011111            ; check for multiple of 32
-;     bne NewAttribCheckDone    ; if low 5 bits = 0, time to write new attribute bytes
-;     jsr DrawAttributeSlide
-; NewAttribCheckDone:
+
+    lda scroll_pos
+    and #%00011111            ; check for multiple of 32
+    bne NewAttribCheckDone    ; if low 5 bits = 0, time to write new attribute bytes
+    jsr DrawAttributeSlide
+NewAttribCheckDone:
 
 
-NewColumnCheck:
+
   lda scroll_pos
   and #%00000111            ; throw away higher bits to check for multiple of 8
   bne NewColumnCheckDone    ; done if lower bits != 0
@@ -223,7 +236,7 @@ NewColumnCheck:
   lda columnNumber
   clc
   adc #$01             ; go to next column
-  and #%00001111       ; only 128 columns of data, throw away top bit to wrap
+  and #%00001111       ; only 64 columns of data, throw away top bit to wrap
   sta columnNumber
 NewColumnCheckDone:
 
@@ -235,12 +248,13 @@ NewColumnCheckDone:
   lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP   ; enable sprites, enable background, no clipping on left side
   sta PPU_MASK
   
+end:
   ; Load the background to the PPU
   lda scroll_pos      ;HORIZONTAL
   sta PPU_SCROLL
   lda #0              ;(NO) VERTICAL
   sta PPU_SCROLL
 
-end:
+
   rts
 .endproc
