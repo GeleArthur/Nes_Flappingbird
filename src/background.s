@@ -9,8 +9,7 @@ scroll_pos: .res 1
 flippingScroll: .res 1
 
 ppuWriteLocation:  .res 2  ; low byte of new column address
-sourceLow:  .res 1  ; source for column data
-sourceHigh: .res 1
+sourcePtr:  .res 2  ; source for column data
 columnNumber: .res 1  ; which column of level data to draw
 
 .segment "CODE"
@@ -96,10 +95,10 @@ NTSwapCheckDone:
   clc
   lda columnNumber
   adc #<(LowPipesNameTable)
-  sta sourceLow
+  sta sourcePtr
 
   lda #>(LowPipesNameTable)
-  sta sourceHigh
+  sta sourcePtr+1
 
 DrawColumn:
   lda #%00000100        ; set to increment +32 mode
@@ -117,14 +116,14 @@ DrawColumn:
   ldy #$00
   clc
 DrawColumnLoop:
-  lda (sourceLow), y
+  lda (sourcePtr), y
   sta PPU_DATA
-  lda sourceLow
+  lda sourcePtr
   adc #32
-  sta sourceLow
+  sta sourcePtr
 
   bcc @overflowSkip
-  inc sourceLow+1
+  inc sourcePtr+1
   clc
 @overflowSkip:
   dex
@@ -155,17 +154,14 @@ DrawNewAttributes:
 
 
   lda columnNumber  ; (column number / 4) = column data offset
-  ; and #%11111100
-  ; asl
   lsr
   lsr
-  
   clc 
-  adc #<(LowPipesAttributeTable)
-  sta sourceLow
+  adc #<(LowPipesAttributeTable) ; Add base address to offset
+  sta sourcePtr
 
   lda #>(LowPipesAttributeTable)
-  sta sourceHigh
+  sta sourcePtr+1
 
   lda #%00000000 ; Turn off +32 mode
   sta PPU_CTRL
@@ -178,13 +174,11 @@ DrawNewAttributesLoop:
   sta PPU_ADDR             ; write the high byte of column address
   lda ppuWriteLocation
   sta PPU_ADDR             ; write the low byte of column address
-  lda (sourceLow), y    ; copy new attribute byte
+  lda (sourcePtr), y    ; copy new attribute byte
   sta PPU_DATA
   
 
-
-
-  lda ppuWriteLocation ; Add 8 to sourcelow
+  lda ppuWriteLocation ; Add 8 to sourcePtr
   clc
   adc #$08
   sta ppuWriteLocation
@@ -197,16 +191,6 @@ DrawNewAttributesLoop:
   cmp #64
   beq @end
   jmp DrawNewAttributesLoop
-  
-  
-;   iny
-  
-;   lda ppuWriteLocation         ; next attribute byte is at address + 8
-;   clc
-;   adc #$08
-;   sta ppuWriteLocation
-;   jmp DrawNewAttributesLoop
-; DrawNewAttributesLoopDone:
 @end:
   rts
 .endproc
