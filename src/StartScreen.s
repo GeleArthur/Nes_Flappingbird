@@ -76,6 +76,8 @@ Player_Jmp_Counter: .res 1
 
     SET_NAMETABLE_DRAW_BACKGROUND nametableStartscreen
 
+    jsr CopyPallet
+
     WAIT_UNITL_FRAME_HAS_RENDERED
 
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
