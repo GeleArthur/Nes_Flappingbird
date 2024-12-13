@@ -26,12 +26,11 @@ oam: .res 256
 
 ; Sets the nmi_ready to 1 and waits until the nmi sets it back to 0
 .macro WAIT_UNITL_FRAME_HAS_RENDERED
-.scope
+.local @waitVBlank
     inc nmi_ready
 @waitVBlank:
     lda nmi_ready
 bne @waitVBlank ; If nmi_ready == 1 -> wait
-.endscope
 .endmacro
 
 ; nmi will call this onces its reached vblank

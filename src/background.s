@@ -15,7 +15,7 @@ columnNumber: .res 1  ; which column of level data to draw
 .segment "CODE"
 
 .macro SET_NAMETABLE_DRAW_BACKGROUND nametableLocation
-.scope outer
+
 
   lda #<nametableLocation
   sta nametable_ptr
@@ -23,7 +23,6 @@ columnNumber: .res 1  ; which column of level data to draw
   sta nametable_ptr+1
   jsr FullScreenBackGroundDraw
 
-.endscope
 .endmacro
 
 
@@ -66,13 +65,6 @@ NTSwapCheckDone:
 
   rts
 .endproc
-
-
-
-
-
-
-
 
 
 

@@ -5,20 +5,19 @@ Player_Jmp_Counter: .res 1
 
 
 .macro  CheckForA gamepad, plyrBit
-.scope
+.local @End
     lda gamepad   
     and #PAD_A      
-    beq End
+    beq @End
     lda plyrBit
     ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for plyr (plyrbitmask) -> flips this one
     sta Have_Players_Pressed_A 
 
-    End:
-.endscope
+@End:
 .endmacro
 
 .macro UpdateOrJumpingPlyr player, playerOAM , gamepad , plyrBitMask , jmpOffset
-.scope
+    .local End, UpdatePlayer
     lda Have_Players_Pressed_A
     and plyrBitMask
     bne UpdatePlayer
@@ -27,23 +26,21 @@ Player_Jmp_Counter: .res 1
     SET_XY player,playerOAM
 
     jmp End
-    UpdatePlayer:
+UpdatePlayer:
     UPDATE_PLAYER player, playerOAM, gamepad, plyrBitMask
-    End:
+End:
 
-.endscope
 .endmacro
 
 .macro PlyrJumping player, offset
-.scope
-
+    .local DontJump, Increment, ResetCounter, End
     lda Player_Jmp_Counter
     cmp #$24
     bpl DontJump ; if greater than $04 than go down
     ADD_Y #$02, player
     jmp Increment
 
-    DontJump:
+DontJump:
     cmp #$47 ; if 41 reset the counter to 0 else go down
     beq ResetCounter
     ADD_Y #$01, player
@@ -51,17 +48,15 @@ Player_Jmp_Counter: .res 1
     jmp Increment
 
 
-    Increment:
+Increment:
     inc Player_Jmp_Counter
     jmp End
 
-    ResetCounter:
+ResetCounter:
     lda #$0
     sta Player_Jmp_Counter
 
-    End:
-
-.endscope
+End:
 .endmacro
 
 .segment "CODE"

@@ -90,6 +90,7 @@
 .endmacro
 
 .macro UPDATE_PLAYER player, playerOAM, gamepad, plyrBitMask
+    .local NOT_GAMEPAD_LEFT, NOT_GAMEPAD_RIGHT, NOT_GAMEPAD_A, BRANCH_ON_TERMINAL_VELOCITY, SET_PLAYER_XY
     lda gamepad
     and #PAD_L 
 
@@ -102,7 +103,7 @@
         sbc #1
         sta player+PlayerStruct::xpos
     
-    NOT_GAMEPAD_LEFT:
+NOT_GAMEPAD_LEFT:
 
         lda gamepad
         and #PAD_R
@@ -116,7 +117,7 @@
             adc #1
             sta player+PlayerStruct::xpos
 
-    NOT_GAMEPAD_RIGHT:
+NOT_GAMEPAD_RIGHT:
         lda plyrBitMask
         EOR #%11111111 ;flip plyr_jump_hold_button to false 
         sta plyr_jump_hold_button
@@ -144,7 +145,7 @@
             lda #$0
             sta player+PlayerStruct::gravity
 
-    NOT_GAMEPAD_A:
+NOT_GAMEPAD_A:
 
     lda player+PlayerStruct::xpos
     OAM_WRITE_X_A playerOAM
@@ -162,7 +163,7 @@
     lda #$0
     sta player+PlayerStruct::gravityCounter
 
-    BRANCH_ON_TERMINAL_VELOCITY:
+BRANCH_ON_TERMINAL_VELOCITY:
 
     lda plyr_jump_hold_button
     and plyrBitMask  ;checks for that players bit
@@ -178,13 +179,13 @@
 
 .segment "ZEROPAGE"
 					   ;        2 to turn rendering off next NMI
-player1: .res .sizeof(PlayerStruct)
-player2: .res .sizeof(PlayerStruct)
-player3: .res .sizeof(PlayerStruct)
-player4: .res .sizeof(PlayerStruct)
+player1: .tag PlayerStruct
+player2: .tag PlayerStruct
+player3: .tag PlayerStruct
+player4: .tag PlayerStruct
 
 
-plyr_jump_hold_button:.res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
+plyr_jump_hold_button: .res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
 
 .segment "CODE"
 

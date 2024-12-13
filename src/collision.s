@@ -4,11 +4,12 @@ pipeBottomHighToLow: .res 1
 
 .segment "RODATA"
 pipe_data: ; The bird needs to be between these 2
-.byte 5*8, 13*8
-.byte 9*8, 17*8
-.byte 5*8, 13*8
-.byte 9*8, 17*8
+  .byte 5*8, 13*8
+  .byte 9*8, 17*8
+  .byte 5*8, 13*8
+  .byte 9*8, 17*8
 
+; TODO: Make this a function
 .macro ColliderPlayer which_player, playerDeathStateBit
 
 

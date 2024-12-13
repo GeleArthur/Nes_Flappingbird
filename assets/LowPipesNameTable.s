@@ -1,3 +1,9 @@
+.struct backgroundLauout
+    
+
+.endstruct
+
+
 LowPipesNameTable:
 	.byte $00,$00,$00,$00,$0d,$0e,$0f,$10,$00,$00,$00,$00,$0d,$0e,$0f,$10
 	.byte $00,$00,$00,$00,$0d,$0e,$0f,$10,$00,$00,$00,$00,$0d,$0e,$0f,$10
@@ -64,4 +70,8 @@ LowPipesAttributeTable:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 	.byte $a0,$a0,$a0,$a0,$a0,$a0,$a0,$a0,$0a,$0a,$0a,$0a,$0a,$0a,$0a,$0a
-
+lowPipesCollsion: ; The bird needs to be between these 2
+    .byte 5*8, 13*8
+    .byte 9*8, 17*8
+    .byte 5*8, 13*8
+    .byte 9*8, 17*8

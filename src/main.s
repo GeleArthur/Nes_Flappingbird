@@ -18,7 +18,7 @@
 .include "background.s"
 .include "playerController.s"
 .include "failstate.s"
-.include "pipes.s"
+.include "collision.s"
 .include "startScreen.s"
 .include "pauseGame.s"
 
