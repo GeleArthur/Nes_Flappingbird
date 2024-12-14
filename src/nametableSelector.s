@@ -80,15 +80,15 @@ pipesPtr: .res 2
   asl ; *2 of stride offset
 
   clc
-  adc NameTablePtrs ; Add where the nametables pointers start. 
-  
+  adc #<NameTablePtrs ; Add where the nametables pointers start. 
+
+
+  tax
+  lda $00, x
   sta ptrActiveDrawnNameTable
-  clc
-  adc #01
+  inx
+  lda $00, x
   sta ptrActiveDrawnNameTable+1
-  
-
-
 
 NTSwapCheckDone:
 
