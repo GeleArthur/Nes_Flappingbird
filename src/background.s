@@ -12,6 +12,8 @@ ppuWriteLocation:  .res 2  ; low byte of new column address
 sourcePtr:  .res 2  ; source for column data
 columnNumber: .res 1  ; which column of level data to draw
 
+temp1: .res 1 ; Big sad
+
 .segment "CODE"
 
 .macro SET_NAMETABLE_DRAW_BACKGROUND nametableLocation
@@ -141,14 +143,29 @@ DrawNewAttributes:
   adc #$C0
   sta ppuWriteLocation     ; attribute base + scroll / 32
 
+
+  ; Load pointers
+  lda ptrActiveDrawnNameTable+1
+  sta sourcePtr+1
+
+  lda ptrActiveDrawnNameTable
+  sta sourcePtr
+
+  adc #BackgroundLayout::attributeTable
+  sta sourcePtr
+  lda sourcePtr+1
+  adc #$00
+  sta sourcePtr+1
+  
+  
   lda columnNumber  ; (column number / 4) = column data offset
   lsr
   lsr
-  clc 
-  adc #<(lowPipes+BackgroundLayout::attributeTable) ; Add base address to offset
-  sta sourcePtr
-
-  lda #>(lowPipes+BackgroundLayout::attributeTable)
+  sta temp1
+  lda sourcePtr
+  adc temp1
+  lda sourcePtr+1
+  adc #$00
   sta sourcePtr+1
 
   lda #%00000000 ; Turn off +32 mode
