@@ -14,13 +14,13 @@
 .incbin "../assets/texture.chr"
 
 .include "controllers.s"
-.include "../assets/nametable01.s"
 .include "background.s"
 .include "playerController.s"
 .include "failstate.s"
 .include "collision.s"
 .include "startScreen.s"
 .include "pauseGame.s"
+.include "nametableSelector.s"
 
 
 .include "audio.s"
@@ -29,6 +29,8 @@
 
 .proc reset
     NES_INIT ; Setup nes
+
+    jsr InitNameTableSelector
     
     jsr StartScreen
 

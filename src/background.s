@@ -51,21 +51,6 @@ LoadBackground:
   rts
 .endproc
 
-.proc ScrollBackground
-  inc scroll_pos
-
-  lda scroll_pos       ; check if the scroll just wrapped from 255 to 0
-  bne NTSwapCheckDone
-  
-  lda flippingScroll    ; load current nametable number (0 or 1)
-  eor #$01              ; exclusive OR of bit 0 will flip that bit
-  sta flippingScroll    ; so if nametable was 0, now 1
-                        ;    if nametable was 1, now 0
-NTSwapCheckDone:
-
-  rts
-.endproc
-
 
 
 
@@ -86,10 +71,10 @@ NTSwapCheckDone:
 
   clc
   lda columnNumber
-  adc #<(LowPipesNameTable)
+  adc #<(lowPipes+BackgroundLayout::nameTable)
   sta sourcePtr
 
-  lda #>(LowPipesNameTable)
+  lda #>(lowPipes+BackgroundLayout::nameTable)
   sta sourcePtr+1
 
 DrawColumn:
@@ -143,16 +128,14 @@ DrawNewAttributes:
   adc #$C0
   sta ppuWriteLocation     ; attribute base + scroll / 32
 
-
-
   lda columnNumber  ; (column number / 4) = column data offset
   lsr
   lsr
   clc 
-  adc #<(LowPipesAttributeTable) ; Add base address to offset
+  adc #<(lowPipes+BackgroundLayout::attributeTable) ; Add base address to offset
   sta sourcePtr
 
-  lda #>(LowPipesAttributeTable)
+  lda #>(lowPipes+BackgroundLayout::attributeTable)
   sta sourcePtr+1
 
   lda #%00000000 ; Turn off +32 mode
@@ -225,7 +208,6 @@ NewColumnCheckDone:
   sta PPU_MASK
   
 end:
-  ; Load the background to the PPU
   lda scroll_pos      ;HORIZONTAL
   sta PPU_SCROLL
   lda #0              ;(NO) VERTICAL

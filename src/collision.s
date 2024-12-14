@@ -1,7 +1,3 @@
-.segment "ZEROPAGE"
-pipeUpperHighToLow: .res 1
-pipeBottomHighToLow: .res 1
-
 .segment "RODATA"
 pipe_data: ; The bird needs to be between these 2
   .byte 5*8, 13*8
