@@ -101,6 +101,9 @@ StayInStartScreen:
   
     jsr CheckForPlayersPressingA
 
+    inc seed ; get a random number
+    inc seed+1 ; get a random number
+
     lda Have_Players_Pressed_A
     cmp #%10001111  
     bne StayInStartScreen

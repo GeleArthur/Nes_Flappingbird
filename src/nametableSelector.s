@@ -1,10 +1,11 @@
 .include "../assets/nametable01.s"
 .include "../assets/nametable02.s"
+.include "random-generator.s"
 
 
 .segment "ZEROPAGE"
-ptrToCurrentNametable1: .res 2
-ptrToCurrentNametable2: .res 2
+ptrPreviousDrawnNametable: .res 2 ; Old poiner
+ptrActiveDrawnNameTable: .res 2 ; Current nameable drawn pointer
 
 NameTablePtrs:
 lowPipesPtr: .res 2
@@ -13,7 +14,7 @@ nametable02Ptr: .res 2
 pipesPtr: .res 2
 
 .segment "CODE"
-.define NAMETABLECOUNT 4
+.define NAMETABLECOUNT 4 ; 
 
 .proc InitNameTableSelector
   lda #<lowPipes
@@ -37,16 +38,16 @@ pipesPtr: .res 2
   sta pipesPtr+1
 
   lda #<startScreen
-  sta ptrToCurrentNametable1
+  sta ptrPreviousDrawnNametable
   lda #>startScreen
-  sta ptrToCurrentNametable1+1
+  sta ptrPreviousDrawnNametable+1
 
 
   ; Will be overwritten at first frame but lets not have it point to random stuff
   lda #<lowPipes
-  sta ptrToCurrentNametable2
+  sta ptrActiveDrawnNameTable
   lda #>lowPipes
-  sta ptrToCurrentNametable2+1
+  sta ptrActiveDrawnNameTable+1
 
   rts
 .endproc
@@ -62,13 +63,31 @@ pipesPtr: .res 2
   sta flippingScroll    ; so if nametable was 0, now 1
                         ;    if nametable was 1, now 0
   
-  lda ptrToCurrentNametable2
-  sta ptrToCurrentNametable1
+  ; Copy over prevous table
+  lda ptrActiveDrawnNameTable
+  sta ptrPreviousDrawnNametable
 
-  lda ptrToCurrentNametable2+1
-  sta ptrToCurrentNametable1+1
+  lda ptrActiveDrawnNameTable+1
+  sta ptrPreviousDrawnNametable+1
 
+  jsr prng
+  lsr
+  lsr
+  lsr
+  lsr
+  lsr 
+  lsr ; Get a random number between 0-4
+  asl ; *2 of stride offset
+
+  clc
+  adc NameTablePtrs ; Add where the nametables pointers start. 
   
+  sta ptrActiveDrawnNameTable
+  clc
+  adc #01
+  sta ptrActiveDrawnNameTable+1
+  
+
 
 
 NTSwapCheckDone:
