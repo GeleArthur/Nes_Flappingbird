@@ -65,9 +65,9 @@
     jsr HandlePlayer4
 
     ; jsr CollisionPlayer1
-    ; jsr CollisionPlayer2
-    ; jsr CollisionPlayer3
-    ; jsr CollisionPlayer4
+    jsr CollisionPlayer2
+    jsr CollisionPlayer3
+    jsr CollisionPlayer4
 
     jsr ScrollBackground
 

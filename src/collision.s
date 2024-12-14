@@ -25,12 +25,23 @@ pipe_data: ; The bird needs to be between these 2
 checkY:
     lda scroll_pos
     adc which_player+PlayerStruct::xpos
+    bcs UseActiveCollision
+    ; sta 
+    ; IDEA basted on the positionof the player and scroll it will branch or not.
+    ; Based on that we can flip between the active pointer or previousPointer.
 
-    lsr 
-    lsr 
-    lsr 
-    lsr 
-    lsr 
+    jmp UsePreviousCollision
+UseActiveCollision:
+    
+UsePreviousCollision:
+  
+
+    
+    lsr
+    lsr
+    lsr
+    lsr
+    lsr
     lsr ; Divide by 64
     asl ; stride * 2
     tax ; Put in x
