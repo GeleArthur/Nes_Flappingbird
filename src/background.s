@@ -69,13 +69,41 @@ LoadBackground:
   adc #$20          ; add high byte of nametable base address ($2000)
   sta ppuWriteLocation+1    ; now address = $20 or $24 for nametable 0 or 1
 
-  clc
-  lda columnNumber
-  adc #<(lowPipes+BackgroundLayout::nameTable)
-  sta sourcePtr
 
-  lda #>(lowPipes+BackgroundLayout::nameTable)
+  lda ptrActiveDrawnNameTable+1
   sta sourcePtr+1
+
+  lda ptrActiveDrawnNameTable
+  sta sourcePtr
+  adc #BackgroundLayout::nameTable
+  sta sourcePtr
+  lda sourcePtr+1
+  adc #$00
+  sta sourcePtr+1
+
+  lda sourcePtr
+  adc #columnNumber
+  sta sourcePtr
+  lda sourcePtr+1
+  adc #$00
+  sta sourcePtr+1
+
+
+
+
+  ; adc columnNumber
+
+  ; clc
+  ; adc #<(BackgroundLayout::nameTable)
+  ; adc ptrActiveDrawnNameTable
+  ; sta sourcePtr
+  
+
+  ; lda columnNumber
+  ; clc
+  ; adc #<(BackgroundLayout::nameTable)
+  ; adc ptrActiveDrawnNameTable+1
+  ; sta sourcePtr+1
 
 DrawColumn:
   lda #%00000100        ; set to increment +32 mode
