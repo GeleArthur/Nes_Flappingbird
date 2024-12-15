@@ -1,5 +1,10 @@
-.include "../assets/pipes.s"
-.include "../assets/LowPipesNameTable.s"
+
+
+.struct BackgroundLayout
+  collision .byte 2*4
+  attributeTable .byte 16*4
+  nameTable .byte
+.endstruct
 
 
 .segment "ZEROPAGE"
@@ -161,12 +166,14 @@ DrawNewAttributes:
   lda columnNumber  ; (column number / 4) = column data offset
   lsr
   lsr
-  sta temp1
-  lda sourcePtr
+  sta temp1 ; Save offset in tempvarible
+  lda sourcePtr ; Load pointer
   adc temp1
+  sta sourcePtr ; Add offset
+
   lda sourcePtr+1
   adc #$00
-  sta sourcePtr+1
+  sta sourcePtr+1 ; If overflow add to higher bit
 
   lda #%00000000 ; Turn off +32 mode
   sta PPU_CTRL

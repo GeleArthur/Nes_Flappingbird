@@ -4,7 +4,6 @@
 
 .include "../assets/nametableStartscreen.s"
 
-
 .include "setup/header.s"
 .include "setup/vectors.s"
 .include "setup/nmi-vblank.s"
@@ -22,24 +21,19 @@
 .include "pauseGame.s"
 .include "nametableSelector.s"
 
-
 .include "audio.s"
+
 .segment "CODE"
-
-
 .proc reset
     NES_INIT ; Setup nes
 
     jsr InitNameTableSelector
-    
     jsr StartScreen
 
     ; Setup player lives
     lda #%00001111
     sta playerDeathStates
 
-    ;SET_NAMETABLE_DRAW_BACKGROUND pipes_name_table
-    
     jsr audio_main_game
 
     lda #CTRL_NMI

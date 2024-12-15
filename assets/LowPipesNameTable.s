@@ -1,10 +1,3 @@
-.struct BackgroundLayout
-collision .byte 2*4
-attributeTable .byte 16*4
-nameTable .byte
-
-.endstruct
-
 .segment "RODATA"
 lowPipes:
 lowPipesCollsion:
