@@ -8,10 +8,10 @@ nameTable .byte
 .segment "RODATA"
 lowPipes:
 lowPipesCollsion:
-    .byte 5*8, 13*8
-    .byte 9*8, 17*8
-    .byte 5*8, 13*8
-    .byte 9*8, 17*8
+    .byte 4*8, 21*8
+    .byte 4*8, 21*8
+    .byte 4*8, 21*8
+    .byte 4*8, 21*8
 
 LowPipesAttributeTable:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00

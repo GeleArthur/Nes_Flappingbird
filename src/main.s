@@ -64,7 +64,7 @@
     jsr HandlePlayer3
     jsr HandlePlayer4
 
-    ; jsr CollisionPlayer1
+    jsr CollisionPlayer1
     jsr CollisionPlayer2
     jsr CollisionPlayer3
     jsr CollisionPlayer4

@@ -12,7 +12,7 @@ ppuWriteLocation:  .res 2  ; low byte of new column address
 sourcePtr:  .res 2  ; source for column data
 columnNumber: .res 1  ; which column of level data to draw
 
-temp1: .res 1 ; Big sad
+temp1: .res 2 ; Big sad
 
 .segment "CODE"
 

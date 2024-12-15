@@ -29,13 +29,17 @@ checkY:
     ; sta 
     ; IDEA basted on the positionof the player and scroll it will branch or not.
     ; Based on that we can flip between the active pointer or previousPointer.
-
+    ldy ptrPreviousDrawnNametable
+    sty temp1
+    ldy ptrPreviousDrawnNametable+1
+    sty temp1+1
     jmp UsePreviousCollision
 UseActiveCollision:
-    
+    ldy ptrActiveDrawnNameTable
+    sty temp1
+    ldy ptrActiveDrawnNameTable+1
+    sty temp1+1
 UsePreviousCollision:
-  
-
     
     lsr
     lsr
@@ -44,15 +48,17 @@ UsePreviousCollision:
     lsr
     lsr ; Divide by 64
     asl ; stride * 2
-    tax ; Put in x
+    tay ; Put in x
 
-    lda pipe_data, x
+    lda (temp1), y
     cmp which_player+PlayerStruct::ypos
-    bpl collided
+    bcs collided
 
-    lda pipe_data+1, x
+    iny
+
+    lda (temp1), y
     cmp which_player+PlayerStruct::ypos
-    bmi collided
+    bcc collided
 
     
 

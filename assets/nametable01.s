@@ -1,10 +1,10 @@
 .segment "RODATA"
 nametable01:
 nametable01Collsion:
-    .byte 5*8, 13*8
-    .byte 9*8, 17*8
-    .byte 5*8, 13*8
-    .byte 9*8, 17*8
+    .byte 0*8, 32*8-1
+    .byte 0*8, 32*8-1
+    .byte 0*8, 32*8-1
+    .byte 0*8, 32*8-1
 
 attributeTable01:
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00

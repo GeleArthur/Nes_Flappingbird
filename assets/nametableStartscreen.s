@@ -1,13 +1,13 @@
 .segment "RODATA"
 
-; WARNING DOES NOT FOLLOW THE FORMAT BUT START SCREEN IS SPECIAL
+; WARNING DOES NOT FOLLOW THE NAMETABLE FORMAT BUT START SCREEN IS SPECIAL
 
 startScreen:
 startScreenCollision: 
-    .byte 5*8, 13*8
-    .byte 9*8, 17*8
-    .byte 5*8, 13*8
-    .byte 9*8, 17*8
+    .byte 0*8, 32*8-1
+    .byte 0*8, 32*8-1
+    .byte 0*8, 32*8-1
+    .byte 0*8, 32*8-1
 
 
 nametableStartscreen:
