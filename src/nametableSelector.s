@@ -1,5 +1,5 @@
-.include "../assets/nametable02.s"
-.include "../assets/pipes.s"
+.include "../assets/HugeDrop.s"
+.include "../assets/BottomWide.s"
 .include "../assets/LowPipesNameTable.s"
 .include "../assets/WideToClose.s"
 .include "random-generator.s"
@@ -12,8 +12,8 @@ ptrActiveDrawnNameTable: .res 2 ; Current nameable drawn pointer
 NameTablePtrs:
 lowPipesPtr: .res 2
 WideToClosePtr: .res 2
-nametable02Ptr: .res 2
-pipesPtr: .res 2
+HugeDropPtr: .res 2
+BottomWidePtr: .res 2
 
 .segment "CODE"
 .define NAMETABLECOUNT 4 ; 
@@ -29,15 +29,15 @@ pipesPtr: .res 2
   lda #>WideToClose
   sta WideToClosePtr+1
 
-  lda #<nametable02
-  sta nametable02Ptr
-  lda #>nametable02
-  sta nametable02Ptr+1
+  lda #<HugeDrop
+  sta HugeDropPtr
+  lda #>HugeDrop
+  sta HugeDropPtr+1
 
-  lda #<pipes
-  sta pipesPtr
-  lda #>pipes
-  sta pipesPtr+1
+  lda #<BottomWide
+  sta BottomWidePtr
+  lda #>BottomWide
+  sta BottomWidePtr+1
 
   lda #<startScreen
   sta ptrPreviousDrawnNametable
@@ -46,9 +46,9 @@ pipesPtr: .res 2
 
 
   ; Will be overwritten at first frame but lets not have it point to random stuff
-  lda #<WideToClose
+  lda #<lowPipes
   sta ptrActiveDrawnNameTable
-  lda #>WideToClose
+  lda #>lowPipes
   sta ptrActiveDrawnNameTable+1
 
   rts
