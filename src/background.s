@@ -232,7 +232,7 @@ NewAttribCheckDone:
   lda columnNumber
   clc
   adc #$01             ; go to next column
-  and #%00001111       ; only 64 columns of data, throw away top bit to wrap
+  and #%00011111       ; only 64 columns of data, throw away top bit to wrap
   sta columnNumber
 NewColumnCheckDone:
 
