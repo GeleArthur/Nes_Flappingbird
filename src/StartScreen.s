@@ -117,8 +117,6 @@ StayInStartScreen:
     bne StayInStartScreen
 
     LeaveStartScreen:
-    lda #%11001111  
-    sta Have_Players_Pressed_A ;Sets Have_Players_Pressed_A to true for all bools (0100 0000) -> this one leaves start screen if someone presses start
     lda #0
     sta PPU_MASK 
     lda #0
@@ -180,9 +178,11 @@ StayInStartScreen:
 
     HasPressedStart:
     lda #%00000001      ;Prevents player 1 from pausing game
-    sta game_is_paused  ;
+    sta game_is_paused  
 
 
     lda Have_Players_Pressed_A 
     sta playerDeathStates     ;kills players by storing  the players who have pressed A (if player 1 and 2 have pressed A that equal 0011. which means player 3 and 4 die)
+    lda #%11001111  
+    sta Have_Players_Pressed_A ;Sets Have_Players_Pressed_A to true for all bools (0100 0000) -> this one leaves start screen if someone presses start
 .endproc
