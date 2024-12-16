@@ -1,7 +1,8 @@
 .include "../assets/HugeDrop.s"
 .include "../assets/BottomWide.s"
-.include "../assets/LowPipesNameTable.s"
+.include "../assets/LowPipes.s"
 .include "../assets/WideToClose.s"
+.include "../assets/UpAndDown.s"
 .include "random-generator.s"
 
 
