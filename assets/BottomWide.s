@@ -3,10 +3,10 @@
 
 BottomWide:
 BottomWideCollision:
-    .byte 10*8 - 2, 22*8 + 2
-    .byte 14*8 - 2, 22*8 + 2
-    .byte 10*8 - 2, 22*8 + 2
-    .byte 6*8 - 2, 22*8 + 2
+    .byte 10*8 - 4, 22*8 + 4
+    .byte 14*8 - 4, 22*8 + 4
+    .byte 10*8 - 4, 22*8 + 4
+    .byte 6*8 - 4, 22*8 + 4
 
 BottomWideAttributeTable:
 	.byte $00,$00,$00,$00,$30,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00

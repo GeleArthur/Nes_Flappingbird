@@ -3,10 +3,10 @@
 HugeDrop:
 
 HugeDropCloseCollision:
-    .byte 2*8 - 2, 10*8 + 2
-    .byte 6*8 - 2, 16*8 + 2
-    .byte 6*8 - 2, 14*8 + 2
-    .byte 10*8 - 2, 18*8 + 2
+    .byte 2*8 - 4, 10*8 + 4
+    .byte 6*8 - 4, 16*8 + 4
+    .byte 6*8 - 4, 14*8 + 4
+    .byte 10*8 - 4, 18*8 + 4
 	
 HugeDropAttributeTable:	
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$33,$cc,$30,$00,$00,$00,$00

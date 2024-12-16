@@ -2,10 +2,10 @@
 
 UpAndDown:
 UpAndDownCollision:
-    .byte 12*8 - 2, 19*8 + 2
-    .byte 6*8  - 2, 15*8 + 2
-    .byte 11*8 - 2, 20*8 + 2
-    .byte 10*8 - 2, 17*8 + 2
+    .byte 12*8 - 4, 19*8 + 4
+    .byte 6*8  - 4, 15*8 + 4
+    .byte 11*8 - 4, 20*8 + 4
+    .byte 10*8 - 4, 17*8 + 4
 
 UpAndDownAttributeTable:	
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$cc,$30,$00,$00,$00,$00
