@@ -28,11 +28,14 @@
     NES_INIT ; Setup nes
 
     jsr InitNameTableSelector
-    jsr StartScreen
 
+    
     ; Setup player lives
     lda #%00001111
     sta playerDeathStates
+
+    jsr StartScreen ;only do this after setting up players deaths
+
 
     jsr audio_main_game
 
