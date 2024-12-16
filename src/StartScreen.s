@@ -10,7 +10,8 @@ Player_Jmp_Counter: .res 1
     and #PAD_A      
     beq @End
     lda plyrBit
-    ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for plyr (plyrbitmask) -> flips this one
+    ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for plyr (plyrbitmask) -> flips this one   
+    ;also stores if setup of player has been done in first bit to avoid redudant calculations 
     sta Have_Players_Pressed_A 
 
 @End:
@@ -91,8 +92,15 @@ StayInStartScreen:
     inc nmi_ready
     WAIT_UNITL_FRAME_HAS_RENDERED  
 
+    jsr CheckForStart ;check if select is pressed in any gamepad
+    ;if so immediately leave to gameplay
     lda Have_Players_Pressed_A
-    and #%10000000
+    and #%01000000            ;the second bit of this variable stores if players have pressed start and if leaves start screen
+    bne LeaveStartScreen
+
+
+    lda Have_Players_Pressed_A
+    and #%10000000            ;the very first bit of this variable stores if player have been setup or not
     bne SkipSetup
     jsr SetupPlayers
 
@@ -108,7 +116,7 @@ StayInStartScreen:
     cmp #%10001111  
     bne StayInStartScreen
 
-
+    LeaveStartScreen:
     lda #0
     sta PPU_MASK 
     lda #0
@@ -147,4 +155,34 @@ StayInStartScreen:
     CheckForA gamepad_3,#%00000100
     CheckForA gamepad_4,#%00001000
 
+.endproc
+
+.proc CheckForStart
+    lda gamepad_1
+    and #PAD_START
+    bne HasPressedStart
+
+    lda gamepad_2
+    and #PAD_START
+    bne HasPressedStart
+
+    lda gamepad_3
+    and #PAD_START
+    bne HasPressedStart
+
+    lda gamepad_4
+    and #PAD_START
+    bne HasPressedStart
+
+    rts
+
+    HasPressedStart:
+    lda #%00000001      ;Prevents player 1 from pausing game
+    sta game_is_paused  
+
+
+    lda Have_Players_Pressed_A 
+    sta playerDeathStates     ;kills players by storing  the players who have pressed A (if player 1 and 2 have pressed A that equal 0011. which means player 3 and 4 die)
+    lda #%11001111  
+    sta Have_Players_Pressed_A ;Sets Have_Players_Pressed_A to true for all bools (0100 0000) -> this one leaves start screen if someone presses start
 .endproc

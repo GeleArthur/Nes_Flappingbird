@@ -212,7 +212,8 @@ DrawNewAttributesLoop:
 
 .proc NMIBackgroundDraw
   lda Have_Players_Pressed_A
-  cmp #%10001111  
+  ora #%11000000
+  cmp #%11001111  
   bne end
 
 
