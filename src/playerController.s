@@ -9,11 +9,11 @@
 .macro  SETUP_PLAYER   player, playerOAM ,  paletteIndex , XOffset
 
    ; Initialize player's position
-   lda #62
+   lda #90
    adc XOffset
    sta player+PlayerStruct::xpos
 
-   lda #112
+   lda #146
    sta player+PlayerStruct::ypos
 
    ; Initialize player's jump counter
