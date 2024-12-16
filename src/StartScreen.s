@@ -92,7 +92,7 @@ StayInStartScreen:
     inc nmi_ready
     WAIT_UNITL_FRAME_HAS_RENDERED  
 
-    jsr CheckForSelect ;check if select is pressed in any gamepad
+    jsr CheckForStart ;check if select is pressed in any gamepad
     ;if so immediately leave to gameplay
     lda Have_Players_Pressed_A
     and #%01000000            ;the second bit of this variable stores if players have pressed start and if leaves start screen
@@ -157,29 +157,32 @@ StayInStartScreen:
 
 .endproc
 
-.proc CheckForSelect
+.proc CheckForStart
     lda gamepad_1
-    and #PAD_SELECT
-    bne HasPressedSelect
+    and #PAD_START
+    bne HasPressedStart
 
     lda gamepad_2
-    and #PAD_SELECT
-    bne HasPressedSelect
+    and #PAD_START
+    bne HasPressedStart
 
     lda gamepad_3
-    and #PAD_SELECT
-    bne HasPressedSelect
+    and #PAD_START
+    bne HasPressedStart
 
     lda gamepad_4
-    and #PAD_SELECT
-    bne HasPressedSelect
+    and #PAD_START
+    bne HasPressedStart
 
     rts
 
-    HasPressedSelect:
+    HasPressedStart:
+    lda #%00000001      ;Prevents player 1 from pausing game
+    sta game_is_paused  ;
+
+
     lda Have_Players_Pressed_A 
-    sta playerDeathStates
-    lda #%01000000
-    ora Have_Players_Pressed_A ;flip Have_Players_Pressed_A to true for the skip scene (0100 0000) -> flips this one
+    sta playerDeathStates     ;kills players by storing  the players who have pressed A (if player 1 and 2 have pressed A that equal 0011. which means player 3 and 4 die)
+    lda #%11001111  ;Sets Have_Players_Pressed_A to true for all bools (0100 0000) -> this one leaves start screen if someone presses start
     sta Have_Players_Pressed_A
 .endproc
