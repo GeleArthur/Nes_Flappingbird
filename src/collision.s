@@ -13,12 +13,14 @@ SpriteBottom: .res 1
 
 
     lda scroll_pos
+    clc
     adc which_player+PlayerStruct::xpos
     and #%00100000
     bne checkY
 
     
     lda scroll_pos
+    clc
     adc which_player+PlayerStruct::xpos
     adc #16
     and #%00100000
@@ -27,6 +29,7 @@ SpriteBottom: .res 1
 
 checkY:
     lda scroll_pos
+    clc
     adc which_player+PlayerStruct::xpos
     bcs UseActiveCollision
     ; sta 
@@ -63,6 +66,7 @@ UsePreviousCollision:
 
     ; CHECK WITH THE BOTTOM
     lda which_player+PlayerStruct::ypos
+    clc
     adc #$10
     sta SpriteBottom
 
