@@ -6,6 +6,9 @@ pipe_data: ; The bird needs to be between these 2
   .byte 9*8, 17*8
 
 ; TODO: Make this a function
+
+.segment "ZEROPAGE"
+SpriteBottom: .res 1
 .macro ColliderPlayer which_player, playerDeathStateBit
 
 
@@ -50,14 +53,21 @@ UsePreviousCollision:
     asl ; stride * 2
     tay ; Put in x
 
+    ; Check with the top pipe
+
     lda (temp1), y
     cmp which_player+PlayerStruct::ypos
     bcs collided
 
     iny
 
+    ; CHECK WITH THE BOTTOM
+    lda which_player+PlayerStruct::ypos
+    adc #$10
+    sta SpriteBottom
+
     lda (temp1), y
-    cmp which_player+PlayerStruct::ypos
+    cmp SpriteBottom
     bcc collided
 
     
