@@ -115,6 +115,7 @@ DrawColumn:
 DrawColumnLoop:
   lda (sourcePtr), y
   sta PPU_DATA
+
   lda sourcePtr
   adc #32
   sta sourcePtr

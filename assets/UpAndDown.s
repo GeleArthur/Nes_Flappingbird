@@ -1,12 +1,12 @@
 .segment "RODATA"
 
+UpAndDown:
 UpAndDownCollision:
     .byte 12*8 - 2, 19*8 + 2
     .byte 6*8  - 2, 15*8 + 2
     .byte 11*8 - 2, 20*8 + 2
     .byte 10*8 - 2, 17*8 + 2
 
-UpAndDown:
 UpAndDownAttributeTable:	
 	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$cc,$30,$00,$00,$00,$00
 	.byte $00,$00,$00,$00,$f0,$00,$00,$00,$00,$0f,$00,$0c,$0f,$03,$cc,$30

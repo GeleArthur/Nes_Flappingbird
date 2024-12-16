@@ -20,9 +20,9 @@ BottomWidePtr: .res 2
 .define NAMETABLECOUNT 4 ; 
 
 .proc InitNameTableSelector
-  lda #<lowPipes
+  lda #<UpAndDown
   sta lowPipesPtr
-  lda #>lowPipes
+  lda #>UpAndDown
   sta lowPipesPtr+1
 
   lda #<WideToClose
@@ -46,7 +46,6 @@ BottomWidePtr: .res 2
   sta ptrPreviousDrawnNametable+1
 
 
-  ; Will be overwritten at first frame but lets not have it point to random stuff
   lda #<lowPipes
   sta ptrActiveDrawnNameTable
   lda #>lowPipes
