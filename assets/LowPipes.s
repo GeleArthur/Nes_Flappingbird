@@ -1,10 +1,10 @@
 .segment "RODATA"
 lowPipes:
 lowPipesCollsion:
-    .byte 4*8 - 2, 22*8 + 2
-    .byte 4*8 - 2, 22*8 + 2
-    .byte 4*8 - 2, 22*8 + 2
-    .byte 4*8 - 2, 22*8 + 2
+    .byte 4*8 - 4, 22*8 + 4
+    .byte 4*8 - 4, 22*8 + 4
+    .byte 4*8 - 4, 22*8 + 4
+    .byte 4*8 - 4, 22*8 + 4
 	
 LowPipesAttributeTable:
 	.byte $cc,$00,$00,$00,$30,$00,$30,$00,$00,$00,$00,$3c,$03,$00,$00,$00

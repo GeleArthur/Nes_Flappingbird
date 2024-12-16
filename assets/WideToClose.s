@@ -2,10 +2,10 @@
 WideToClose:
 
 WideToCloseCollision:
-    .byte 6*8 - 2, 20*8 + 2
-    .byte 8*8 - 2, 18*8 + 2
-    .byte 10*8 - 2, 16*8 + 2
-    .byte 11*8 - 2, 16*8 + 2
+    .byte 6*8 - 4, 20*8 + 4
+    .byte 8*8 - 4, 18*8 + 4
+    .byte 10*8 - 4, 16*8 + 4
+    .byte 11*8 - 4, 16*8 + 4
 	
 WideToCloseAttributeTable:
 	.byte $00,$00,$00,$00,$f0,$00,$3f,$00,$00,$00,$00,$00,$0f,$00,$0f,$00
