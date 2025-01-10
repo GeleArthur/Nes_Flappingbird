@@ -67,7 +67,7 @@ Player4Score: .res 1
     and #%0001111
     bne endOfEndGameCheck
 
-    jmp reset
+    jmp GameEnded
 
 endOfEndGameCheck:
     rts

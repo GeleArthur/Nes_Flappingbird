@@ -21,6 +21,29 @@
 
 .endmacro
 
+.macro NES_INIT_END_OF_GAME
+    sei ; disable interrupt as its never used.
+    cld ; disable decible mode
+
+    ldx #$FF
+    txs ; Make sure stack pointer starts at FF
+
+    inx ; increment x by 1 so it becomes $00
+    stx PPU_CTRL ; disable V in NMI
+    stx PPU_MASK ; Disable rendering
+    ;stx DMC_FREQ ; Mute APU
+
+
+
+    jsr WaitSync ; wait 
+    jsr ClearRam_EndOfGame
+    jsr WaitSync
+    jsr CopyPallet
+    jsr HideAllAOMSprites ; All of these could be macros
+    jsr ClearNameTableAndAttribute
+
+.endmacro
+
 
 
 ; We write 255 to all the x postions in the OAM. This way they are off screen. 

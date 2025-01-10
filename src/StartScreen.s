@@ -61,6 +61,12 @@ End:
 .endmacro
 
 .segment "CODE"
+
+SCORE_PLAYER_1 = 16
+SCORE_PLAYER_2 = 19
+SCORE_PLAYER_3 = 22
+SCORE_PLAYER_4 = 25
+
 .proc StartScreen
     lda #0
     sta PPU_MASK 
@@ -88,6 +94,9 @@ End:
 StayInStartScreen:
     jsr famistudio_update
     jsr GamepadPoll
+
+    jsr ShowScore
+    jsr PositionScore_Menu
     
     inc nmi_ready
     WAIT_UNITL_FRAME_HAS_RENDERED  
@@ -185,4 +194,137 @@ StayInStartScreen:
     sta playerDeathStates     ;kills players by storing  the players who have pressed A (if player 1 and 2 have pressed A that equal 0011. which means player 3 and 4 die)
     lda #%11001111  
     sta Have_Players_Pressed_A ;Sets Have_Players_Pressed_A to true for all bools (0100 0000) -> this one leaves start screen if someone presses start
+.endproc
+
+
+.macro SCORE_TO_OAM score, playerScoreOam
+.local HundredsLoop, TensDigit, TensLoop, UnitsDigit
+
+        ldx #0          ; Clear X register for later use
+        lda #$10
+        OAM_WRITE_TILE_A(playerScoreOam)            ; Initialize hundreds digit to 0
+        OAM_WRITE_TILE_A(playerScoreOam + 1)        ; Initialize tens digit to 0
+        OAM_WRITE_TILE_A(playerScoreOam + 2)        ; Initialize units digit to 0
+
+        lda score       ; Load the score into A
+        cmp #100
+        bcc TensDigit   ; If less than 100, skip to tens calculation
+
+HundredsLoop:
+        sec             ; Set carry for subtraction
+        sbc #100       
+        inx             
+        cmp #100
+        bcs HundredsLoop ; Loop until A < 100
+
+        pha
+        txa
+        adc #$10
+        OAM_WRITE_TILE_A(playerScoreOam)    ; Store the hundreds digit 
+        pla
+TensDigit:
+        ldx #0
+        cmp #10
+        bcc UnitsDigit  ; If less than 10, skip to units calculation
+
+TensLoop:
+        sec             ; Set carry for subtraction
+        sbc #10     
+        inx
+        cmp #10
+        bcs TensLoop    ; Loop until A < 10
+
+        pha
+        txa
+        adc #$10
+        OAM_WRITE_TILE_A((playerScoreOam + 1))    ; Store the hundreds digit 
+        pla                                   
+UnitsDigit:
+        adc #$10
+        OAM_WRITE_TILE_A((playerScoreOam + 2))    ; Store the hundreds digit 
+.endmacro
+
+.proc ShowScore
+
+    SCORE_TO_OAM Player1Score, SCORE_PLAYER_1
+    SCORE_TO_OAM Player2Score, SCORE_PLAYER_2
+    SCORE_TO_OAM Player3Score, SCORE_PLAYER_3
+    SCORE_TO_OAM Player4Score, SCORE_PLAYER_4
+    rts
+.endproc
+
+.proc SetupScore
+
+    OAM_WRITE_X SCORE_PLAYER_1, #8
+    OAM_WRITE_X (SCORE_PLAYER_1 + 1), #16
+    OAM_WRITE_X (SCORE_PLAYER_1 + 2), #24
+
+    OAM_WRITE_ATTRIBUTE SCORE_PLAYER_1, #0
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_1 + 1), #0
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_1 + 2), #0
+
+    OAM_WRITE_X SCORE_PLAYER_2, #40
+    OAM_WRITE_X (SCORE_PLAYER_2 + 1), #48
+    OAM_WRITE_X (SCORE_PLAYER_2 + 2), #56
+
+    OAM_WRITE_ATTRIBUTE SCORE_PLAYER_2, #1
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_2 + 1), #1
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_2 + 2), #1
+
+    OAM_WRITE_X SCORE_PLAYER_3, #8
+    OAM_WRITE_X (SCORE_PLAYER_3 + 1), #16
+    OAM_WRITE_X (SCORE_PLAYER_3 + 2), #24
+
+    OAM_WRITE_ATTRIBUTE SCORE_PLAYER_3, #2
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_3 + 1), #2
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_3 + 2), #2
+
+    OAM_WRITE_X SCORE_PLAYER_4, #40
+    OAM_WRITE_X (SCORE_PLAYER_4 + 1), #48
+    OAM_WRITE_X (SCORE_PLAYER_4 + 2), #56
+
+    OAM_WRITE_ATTRIBUTE SCORE_PLAYER_4, #3
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_4 + 1), #3
+    OAM_WRITE_ATTRIBUTE (SCORE_PLAYER_4 + 2), #3
+    rts
+.endproc
+
+.proc PositionScore_Menu
+
+    OAM_WRITE_Y SCORE_PLAYER_1, #16
+    OAM_WRITE_Y (SCORE_PLAYER_1 + 1), #16
+    OAM_WRITE_Y (SCORE_PLAYER_1 + 2), #16
+    
+    OAM_WRITE_Y SCORE_PLAYER_2, #16
+    OAM_WRITE_Y (SCORE_PLAYER_2 + 1), #16
+    OAM_WRITE_Y (SCORE_PLAYER_2 + 2), #16
+
+    OAM_WRITE_Y SCORE_PLAYER_3, #24
+    OAM_WRITE_Y (SCORE_PLAYER_3 + 1), #24
+    OAM_WRITE_Y (SCORE_PLAYER_3 + 2), #24
+
+    OAM_WRITE_Y SCORE_PLAYER_4, #24
+    OAM_WRITE_Y (SCORE_PLAYER_4 + 1), #24
+    OAM_WRITE_Y (SCORE_PLAYER_4 + 2), #24
+    rts
+.endproc
+
+.proc PositionScore_Game
+    
+    OAM_WRITE_Y SCORE_PLAYER_1, #255
+    OAM_WRITE_Y (SCORE_PLAYER_1 + 1), #255
+    OAM_WRITE_Y (SCORE_PLAYER_1 + 2), #255
+
+    OAM_WRITE_Y SCORE_PLAYER_2, #255
+    OAM_WRITE_Y (SCORE_PLAYER_2 + 1), #255
+    OAM_WRITE_Y (SCORE_PLAYER_2 + 2), #255
+
+    OAM_WRITE_Y SCORE_PLAYER_3, #255
+    OAM_WRITE_Y (SCORE_PLAYER_3 + 1), #255
+    OAM_WRITE_Y (SCORE_PLAYER_3 + 2), #255
+
+    OAM_WRITE_Y SCORE_PLAYER_4, #255
+    OAM_WRITE_Y (SCORE_PLAYER_4 + 1), #255
+    OAM_WRITE_Y (SCORE_PLAYER_4 + 2), #255
+    rts
 .endproc
