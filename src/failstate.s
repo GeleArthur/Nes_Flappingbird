@@ -14,7 +14,7 @@ Player4Score: .res 1
     and #playerBit
     
     beq :++++
-    ; Save player State
+    ; Save player State | Swap the alive bit
     lda playerDeathStates
     eor #playerBit
     sta playerDeathStates

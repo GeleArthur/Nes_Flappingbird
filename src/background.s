@@ -212,6 +212,7 @@ DrawNewAttributesLoop:
 
 
 .proc NMIBackgroundDraw
+  ; Check if we are still  in the main menu
   lda Have_Players_Pressed_A
   ora #%11000000
   cmp #%11001111  

@@ -73,6 +73,7 @@ BottomWidePtr: .res 2
   lda ptrActiveDrawnNameTable+1
   sta ptrPreviousDrawnNametable+1
 
+  ; Get random number for new nametable selector
   jsr prng
   lsr
   lsr
@@ -85,7 +86,8 @@ BottomWidePtr: .res 2
   clc
   adc #<NameTablePtrs ; Add where the nametables pointers start. 
 
-
+  ; Store new Pointer to random nametable
+  ; Dereference the pointer to not store a pointer to a pointer
   tax
   lda $00, x
   sta ptrActiveDrawnNameTable

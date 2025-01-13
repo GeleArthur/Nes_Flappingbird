@@ -11,14 +11,14 @@ pipe_data: ; The bird needs to be between these 2
 SpriteBottom: .res 1
 .macro ColliderPlayer which_player, playerDeathStateBit
 
-
+    ; Check if the player can collide to a pipe by checking his allignment with th e X-Axis
     lda scroll_pos
     clc
     adc which_player+PlayerStruct::xpos
     and #%00100000
     bne checkY
 
-    
+    ; Check Again for the other side of the bird
     lda scroll_pos
     clc
     adc which_player+PlayerStruct::xpos
@@ -28,10 +28,12 @@ SpriteBottom: .res 1
     jmp end
 
 checkY:
+    ; Check what nametable to check the collision from and store pointer in temp
     lda scroll_pos
     clc
     adc which_player+PlayerStruct::xpos
     bcs UseActiveCollision
+
     ; sta 
     ; IDEA basted on the positionof the player and scroll it will branch or not.
     ; Based on that we can flip between the active pointer or previousPointer.
@@ -47,6 +49,7 @@ UseActiveCollision:
     sty temp1+1
 UsePreviousCollision:
     
+    ; Select what pipe line we need to check collision from
     lsr
     lsr
     lsr
@@ -54,7 +57,7 @@ UsePreviousCollision:
     lsr
     lsr ; Divide by 64
     asl ; stride * 2
-    tay ; Put in x
+    tay ; Put in y
 
     ; Check with the top pipe
 
