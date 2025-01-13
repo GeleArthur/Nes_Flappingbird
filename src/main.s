@@ -24,62 +24,50 @@
 .include "audio.s"
 
 .segment "CODE"
-.proc reset
-    NES_INIT ; Setup nes
+.proc sharedReset
 
+    ; Setup background pointers
     jsr InitNameTableSelector
-
     
-    ; Setup player lives
+    ; Set all players alive
     lda #%00001111
     sta playerDeathStates
     jsr SetupScore
 
     jsr StartScreen ;only do this after setting up players deaths
 
+    ; Disable rendering
+    lda #0
+    sta PPU_MASK 
+    lda #0
+    sta PPU_CTRL
 
     jsr audio_main_game
 
+    ; Setup NMI
     lda #CTRL_NMI
     sta PPU_CTRL ; Enable NMI.
 
     WAIT_UNITL_FRAME_HAS_RENDERED ; We are done rendering lets wait for the ppu to be at the vblank before we start rendering
 
+    ; Enable rendering again
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
     sta PPU_MASK ; Enable sprite and background rendering
     lda #CTRL_NMI|CTRL_SPR_1000
     sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
 
+    jsr PositionScore_Game
     jmp Main
+.endproc
+
+.proc reset
+    NES_INIT ; Setup nes
+    jsr sharedReset
 .endproc
 
 .proc GameEnded
     NES_INIT_END_OF_GAME ; Setup nes
-
-    jsr InitNameTableSelector
-
-    
-    ; Setup player lives
-    lda #%00001111
-    sta playerDeathStates
-    jsr SetupScore
-
-    jsr StartScreen ;only do this after setting up players deaths
-
-
-    jsr audio_main_game
-
-    lda #CTRL_NMI
-    sta PPU_CTRL ; Enable NMI.
-
-    WAIT_UNITL_FRAME_HAS_RENDERED ; We are done rendering lets wait for the ppu to be at the vblank before we start rendering
-
-    lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
-    sta PPU_MASK ; Enable sprite and background rendering
-    lda #CTRL_NMI|CTRL_SPR_1000
-    sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
-
-    jmp Main
+    jsr sharedReset
 .endproc
 
 .proc Main
@@ -87,7 +75,6 @@
     jsr GamepadPoll
 
     jsr ShowScore
-    jsr PositionScore_Game
 
     jsr HandlePlayer1
     jsr HandlePlayer2

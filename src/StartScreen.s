@@ -6,6 +6,7 @@ Player_Jmp_Counter: .res 1
 
 .macro  CheckForA gamepad, plyrBit
 .local @End
+    ; Checks if player has pressed A and updates bitfield
     lda gamepad   
     and #PAD_A      
     beq @End
@@ -19,6 +20,8 @@ Player_Jmp_Counter: .res 1
 
 .macro UpdateOrJumpingPlyr player, playerOAM , gamepad , plyrBitMask , jmpOffset
     .local End, UpdatePlayer
+
+    ; If player player has not pressed A play animation
     lda Have_Players_Pressed_A
     and plyrBitMask
     bne UpdatePlayer
@@ -35,6 +38,8 @@ End:
 
 .macro PlyrJumping player, offset
     .local DontJump, Increment, ResetCounter, End
+
+    ; Jumping animation of the player
     lda Player_Jmp_Counter
     cmp #$24
     bpl DontJump ; if greater than $04 than go down
@@ -62,12 +67,15 @@ End:
 
 .segment "CODE"
 
+; Score OAM locations
 SCORE_PLAYER_1 = 16
 SCORE_PLAYER_2 = 19
 SCORE_PLAYER_3 = 22
 SCORE_PLAYER_4 = 25
 
 .proc StartScreen
+    ; Turn of PPU
+    ; Enable NMI but dissable rendering.
     lda #0
     sta PPU_MASK 
     lda #0
@@ -76,22 +84,29 @@ SCORE_PLAYER_4 = 25
     lda #CTRL_NMI
     sta PPU_CTRL
 
+    ; Load the main menu screen to the background
     SET_NAMETABLE_DRAW_BACKGROUND nametableStartscreen
 
+    ; Coppy the pallets for fore- and background to the ppu
     jsr CopyPallet
 
+    ; Wait for NMI ready
     WAIT_UNITL_FRAME_HAS_RENDERED
 
+    ; Turn on rendering
     lda #MASK_SPR | MASK_BG | MASK_SPR_CLIP | MASK_BG_CLIP
     sta PPU_MASK ; Enable sprite and background rendering
     lda #CTRL_NMI | CTRL_SPR_1000
     sta PPU_CTRL ; Enable NMI. Set Sprite characters to use second sheet
 
+    ; Load Audio
     jsr audio_init
     jsr audio_title_screen
 
+    jsr SetupPlayers
 
 StayInStartScreen:
+    ; Main loop for the startscreen
     jsr famistudio_update
     jsr GamepadPoll
 
@@ -101,21 +116,14 @@ StayInStartScreen:
     inc nmi_ready
     WAIT_UNITL_FRAME_HAS_RENDERED  
 
-    jsr CheckForStart ;check if select is pressed in any gamepad
-    ;if so immediately leave to gameplay
+    jsr CheckForStart ;check if start is pressed in on gamepad 1
+    ;if so immediately leave to gameplay main loop
+
     lda Have_Players_Pressed_A
     and #%01000000            ;the second bit of this variable stores if players have pressed start and if leaves start screen
     bne LeaveStartScreen
 
-
-    lda Have_Players_Pressed_A
-    and #%10000000            ;the very first bit of this variable stores if player have been setup or not
-    bne SkipSetup
-    jsr SetupPlayers
-
-    SkipSetup:
     jsr UpdateOrJumpingPlyrs
-  
     jsr CheckForPlayersPressingA
 
     inc seed ; get a random number
@@ -125,12 +133,7 @@ StayInStartScreen:
     cmp #%10001111  
     bne StayInStartScreen
 
-    LeaveStartScreen:
-    lda #0
-    sta PPU_MASK 
-    lda #0
-    sta PPU_CTRL
-
+LeaveStartScreen:
     rts
 
 .endproc

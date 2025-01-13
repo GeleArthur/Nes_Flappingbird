@@ -24,7 +24,7 @@
 	RTS
 .endproc
 
-.export audio_title_screen
+.export audio_main_game
 .proc audio_main_game
 	jsr famistudio_music_stop
 	lda #1

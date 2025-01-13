@@ -20,6 +20,7 @@ BottomWidePtr: .res 2
 .define NAMETABLECOUNT 4 ; 
 
 .proc InitNameTableSelector
+  ; Initialize pointers to the nametables for the random rotation
   lda #<UpAndDown
   sta lowPipesPtr
   lda #>UpAndDown

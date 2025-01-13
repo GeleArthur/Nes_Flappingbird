@@ -6,6 +6,7 @@
     jumpCounter .byte
 .endstruct
 
+; Setting the intial possitons of the players
 .macro  SETUP_PLAYER   player, playerOAM ,  paletteIndex , XOffset
 
    ; Initialize player's position
@@ -37,6 +38,7 @@
 
 .endmacro
 
+; Add to the player Y possition
 .macro ADD_Y value,player
     lda player+PlayerStruct::ypos  
     sec
@@ -44,6 +46,7 @@
     sta player+PlayerStruct::ypos   
 .endmacro
 
+; Subtract to the player Y possition
 .macro SUB_Y value,player
     lda player+PlayerStruct::ypos  
     sec
@@ -51,27 +54,36 @@
     sta player+PlayerStruct::ypos   
 .endmacro
 
+; OAM Update of X and Y positions
 .macro SET_XY  player, playerOAM
+    ; Updates gravity and player Y position
     lda player+PlayerStruct::ypos
     sec
     adc player+PlayerStruct::gravity ;gravity 
     sta player+PlayerStruct::ypos
     OAM_WRITE_Y_A playerOAM
     OAM_WRITE_Y_A (playerOAM+1)
+
+    ; Update other half of sprites
     sec 
     adc #7
     OAM_WRITE_Y_A (playerOAM+2)
     OAM_WRITE_Y_A (playerOAM+3)
 
+    ; Update Player X position
     lda player+PlayerStruct::xpos
     OAM_WRITE_X_A playerOAM
     OAM_WRITE_X_A (playerOAM+2) 
+    ; Update other half of sprite
     sec 
     adc #7
     OAM_WRITE_X_A (playerOAM+1)
     OAM_WRITE_X_A (playerOAM+3)
 .endmacro
 
+; Sets all the playersprite possitions to 1 location
+; For a single player struct
+; Mainly for putting stuff ofscreen.
 .macro SET_PLAYER_POSITION playerX,playerY,player,playerOAM
     lda playerY
     sta player+PlayerStruct::ypos
@@ -89,53 +101,71 @@
     OAM_WRITE_X_A (playerOAM+3)
 .endmacro
 
+; Updates the player poitions according to the controller input.
 .macro UPDATE_PLAYER player, playerOAM, gamepad, plyrBitMask
     .local NOT_GAMEPAD_LEFT, NOT_GAMEPAD_RIGHT, NOT_GAMEPAD_A, BRANCH_ON_TERMINAL_VELOCITY, SET_PLAYER_XY
+    ; Check gamepad L button
     lda gamepad
     and #PAD_L 
 
     beq NOT_GAMEPAD_LEFT
         ; GOING LEFT
+        ; Check for not going over left screen border
         lda player+PlayerStruct::xpos
         cmp #0
         beq NOT_GAMEPAD_LEFT
+        
+        ; Move 1 pixels to the left.
         sec
         sbc #1
         sta player+PlayerStruct::xpos
     
 NOT_GAMEPAD_LEFT:
-
+        ; Check gamepad R button
         lda gamepad
         and #PAD_R
 
         beq NOT_GAMEPAD_RIGHT
-        ; GOING RIGHT
+            ; GOING RIGHT
+            ; Check for not going over the right screen border
             lda player+PlayerStruct::xpos
-            cmp #240
-            beq NOT_GAMEPAD_RIGHT ; FREE OVERFLOW
+            cmp #240                ; 256 - birdsize
+            beq NOT_GAMEPAD_RIGHT
+
+            ; Move 1 pixels to the right.
             clc
             adc #1
             sta player+PlayerStruct::xpos
 
 NOT_GAMEPAD_RIGHT:
+        ; Player Selector (For the A-press bitmask)
         lda plyrBitMask
         EOR #%11111111 ;flip plyr_jump_hold_button to false 
         sta plyr_jump_hold_button
         
+        ; Check for gamepad A button
         lda gamepad
         and #PAD_A
 
         beq NOT_GAMEPAD_A
             ;jumping
+            ; Check if we hit the top of the screen. [ BROKEN - OLD]
             lda player+PlayerStruct::ypos
             cmp #0
             beq NOT_GAMEPAD_A
+
+            ; Update A press bitmask
             lda plyrBitMask
             ora plyr_jump_hold_button ;flip plyr_jump_hold_button to true for p1 (0000 0001) -> flips this one
             sta plyr_jump_hold_button 
+
+            ; Update player Jump Counter 
             lda #$08   ;max value of player+PlayerStruct::jumpCounter ;determines how long the player can hold A for and keep going up
             cmp player+PlayerStruct::jumpCounter      ;compares the J counter with its max value
             beq NOT_GAMEPAD_A 
+
+            ; If still able to jump
+            ; Update the Y position + Counter.
             lda player+PlayerStruct::ypos
             sec
             sbc #$06   ;determines the intesity of elevation
@@ -146,14 +176,12 @@ NOT_GAMEPAD_RIGHT:
             sta player+PlayerStruct::gravity
 
 NOT_GAMEPAD_A:
-
-    lda player+PlayerStruct::xpos
-    OAM_WRITE_X_A playerOAM
-
+    ; Check for terminal velocity
     lda #$03
     cmp player+PlayerStruct::gravity
     beq BRANCH_ON_TERMINAL_VELOCITY ;Branches if its reached terminal velocity
 
+    ; Only inrease gravity every $15 (21) ticks.
     inc player+PlayerStruct::gravityCounter
     lda #$15  ;value for the counter to reach
     cmp player+PlayerStruct::gravityCounter ;check if the player gravity counter is $15
@@ -173,12 +201,13 @@ BRANCH_ON_TERMINAL_VELOCITY:
     lda #$0
     sta player+PlayerStruct::jumpCounter
 
-    SET_PLAYER_XY:
+SET_PLAYER_XY:
+    ; Update OAM
     SET_XY player,playerOAM
 .endmacro
 
 .segment "ZEROPAGE"
-					   ;        2 to turn rendering off next NMI
+; Create player structs
 player1: .tag PlayerStruct
 player2: .tag PlayerStruct
 player3: .tag PlayerStruct
@@ -188,23 +217,22 @@ player4: .tag PlayerStruct
 plyr_jump_hold_button: .res 1 ; Players Holding Jump Button bools 1 bit per player (wastes 4 bits)
 
 .segment "CODE"
-
+; Player OAM Locations
 PLAYER_1 = 0
-
 PLAYER_2 = 4
-
 PLAYER_3 = 8
-
 PLAYER_4 = 12
 
 .proc HandlePlayer1
-
+    ; Check if player Died.
     lda playerDeathStates
     and #%00000001
     beq :+
+    ; If not dead update player
     jsr UpdatePlayer1
     jmp :++
     :
+    ; If player is dead
     jsr UpdatePlayer1Death
     :
     rts
@@ -270,31 +298,26 @@ PLAYER_4 = 12
         rts
 .endproc
 
-
 .proc UpdatePlayer1
-
+    ; Call normal update function if player is not dead
     UPDATE_PLAYER player1, PLAYER_1, gamepad_1, #%00000001
-
     rts
 .endproc
 
 .proc UpdatePlayer2
-
+    ; Call normal update function if player is not dead
    UPDATE_PLAYER player2, PLAYER_2, gamepad_2, #%00000010
-
     rts
 .endproc
 
 .proc UpdatePlayer3
-
+    ; Call normal update function if player is not dead
     UPDATE_PLAYER player3, PLAYER_3, gamepad_3, #%00000100
-
     rts
 .endproc
 
 .proc UpdatePlayer4
-
+    ; Call normal update function if player is not dead
     UPDATE_PLAYER player4, PLAYER_4, gamepad_4, #%00001000
-
     rts
 .endproc
